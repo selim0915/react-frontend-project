@@ -1,18 +1,18 @@
 import React, { useEffect, useState } from 'react'
 
-export default function Launches() {
-    const [data, setData] = useState(null);
+export default function Launches({ data }) {
+    // const [data, setData] = useState(null);
 
-    useEffect(()=>{
-        const feactLaunches = async () => {
-            const res = await fetch('https://api.spacexdata.com/v3/launches');
-            const data = await res.json();
+    // useEffect(()=>{
+    //     const feactLaunches = async () => {
+    //         const res = await fetch('https://api.spacexdata.com/v3/launches');
+    //         const data = await res.json();
 
-            setData(data);
+    //         setData(data);
             
-        }
-        feactLaunches();
-    }, [])
+    //     }
+    //     feactLaunches();
+    // }, [])
 
     if(data === null){
         return null;
@@ -20,11 +20,20 @@ export default function Launches() {
 
     return (
         <div>
-            <ul>
+            <ol>
                 {data.map((item, index) => (
                     <li key={index}>{item.mission_name}</li>
                 ))}
-            </ul>
+            </ol>
         </div>
     )
+}
+
+export async function getServerSideProps() {
+    const res = await fetch('https://api.spacexdata.com/v3/launches');
+    const data = await res.json();
+
+    return { 
+        props: { data }
+    }
 }
