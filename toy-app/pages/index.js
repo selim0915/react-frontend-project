@@ -16,6 +16,12 @@ export default function Home({ allPostsData }) {
           <Link href="/board/first-post">FirstPost</Link>
         </h1>
         <h1>
+          <Link href="/posts/ssg-ssr">/posts/ssg-ssr</Link>
+        </h1>
+        <h1>
+          <Link href="/posts/pre-rendering">/posts/pre-rendering</Link>
+        </h1>
+        <h1>
           <Link href="/1">This page could not be found.</Link>
         </h1>
         <Image src="/images/백준.png" alt="Your Name" className="dark:invert" width={500} height={300} priority/>
