@@ -6,8 +6,10 @@ const PORT= process.env.PORT;
 const app = express();
 const productRoutes = require('./routes');
 const mongoose = require('mongoose');
+const url = process.env.MONGOOSE_URL;
 
-mongoose.connect(process.env.MONGOOSE_URL).then(()=>{
+console.log("몽고db URL:"+ url)
+mongoose.connect(url).then(()=>{
     console.log('db connected');
 }).catch((err)=>{
     console.log(err);
