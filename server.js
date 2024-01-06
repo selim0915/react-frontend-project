@@ -2,12 +2,13 @@ const express = require('express');
 require('dotenv').config();
 
 const PORT= process.env.PORT;
+const URL= process.env.MONGOOSE_URL;
 
 const app = express();
 const productRoutes = require('./routes');
 const mongoose = require('mongoose');
 
-mongoose.connect(process.env.MONGOOSE_URL).then(()=>{
+mongoose.connect(URL).then(()=>{
     console.log('db connected');
 }).catch((err)=>{
     console.log(err);
