@@ -10,7 +10,7 @@ let req, res, next;
 beforeEach(() => {
     req = httpMocks.createRequest();
     res = httpMocks.createResponse();
-    next = null;
+    next = jest.fn();
 })
 
 describe("Product Controller Create", () => {
@@ -34,5 +34,12 @@ describe("Product Controller Create", () => {
         productModel.create.mockReturnValue(newProduct)
         await productController.createProduct(req, res, next);
         expect(res._getJSONData()).toStrictEqual(newProduct)
+    })
+    it("should handle errors", async () => {
+        const errorMessage = { message: "description property missing" };
+        const rejectedPromise = Promise.reject(errorMessage);
+        productModel.create.mockReturnValue(rejectedPromise); // 결과값이 다음과 같으면 ~~
+        await productController.createProduct(req, res, next);
+        expect(next).toBeCalledWith(errorMessage);
     })
 })
