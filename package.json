@@ -1,25 +1,54 @@
 {
-  "name": "tdd",
+  "name": "react-frontend-project",
   "version": "1.0.0",
-  "description": "Incorporating various technologies into React",
-  "main": "server.js",
+  "private": true,
   "scripts": {
     "test": "jest",
+    "dev": "react-scripts start",
     "start": "node server.js"
   },
-  "author": "",
-  "license": "ISC",
   "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-query": "^3.39.3",
+    "react-router-dom": "^5.3.4",
+    "react-scripts": "5.0.1",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
+    "typescript": "^4.9.5",
     "gray-matter": "^4.0.3",
     "mongoose": "^8.0.3",
     "remark": "^15.0.1",
-    "remark-html": "^16.0.1"
+    "remark-html": "^16.0.1",
+    "web-vitals": "^2.1.4"
   },
   "devDependencies": {
+    "@types/jest": "^27.5.2",
+    "@types/node": "^16.18.23",
+    "@types/react": "^18.2.48",
+    "@types/react-dom": "^18.2.18",
+    "@types/react-router-dom": "^5.3.3",
+    "@types/throttle-debounce": "^5.0.0",
     "jest": "^29.7.0",
     "node-mocks-http": "^1.14.0",
     "supertest": "^6.3.3"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
   }
 }
