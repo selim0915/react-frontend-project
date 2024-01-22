@@ -1,3 +1,8 @@
+/**
+ * This is result of processing by BannerPlugin.
+ * Build Date: 2023-08-31
+ */
+
 /*
  * ATTENTION: The "eval" devtool has been used (maybe by default in mode: "development").
  * This devtool is neither made for production nor for readable output files.
