@@ -8,15 +8,25 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 module.exports = {
     mode: 'development',
     entry: {
-        main: './src/app.js'
+        main: './src/index.js'
     },
     output: {
         filename: '[name].js',
-        path: path.resolve('./dist'),
+        path: path.resolve(__dirname, 'dist'),
         assetModuleFilename: '[hash][ext][query]'
     },
     module: {
         rules: [
+            {
+                test: /\.(ts|js)x?$/i,
+                exclude: /node_modules/,
+                use: {
+                  loader: 'babel-loader',
+                  options: {
+                    presets: ['@babel/preset-env', '@babel/preset-react', '@babel/preset-typescript']
+                  }
+                }
+            },
             {
                 test: /\.css$/,
                 use: [
