@@ -9,6 +9,8 @@ const App = () => {
   // eslint-disable-next-line no-undef
   console.log(api.domain)
 
+  const alert = msg => window.alert(msg);
+
   return(
     <div>
       <h1>Hello World??</h1>
