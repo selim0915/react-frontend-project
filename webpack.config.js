@@ -17,13 +17,11 @@ module.exports = {
     },
     devServer: {
         port: process.env.PORT | 3001,
-        stats: 'errors-only',
         compress: true,
         watchContentBase: true,
         historyApiFallback: true,
         publicPath: '/',
-        writeToDisk: true,
-        // hot: true
+        writeToDisk: true
     },
     module: {
         rules: [
