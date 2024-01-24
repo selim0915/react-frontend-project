@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
+import './index.scss';
 
 const App = () => {
   console.log(process.env.NODE_ENV);
