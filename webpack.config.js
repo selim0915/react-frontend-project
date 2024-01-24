@@ -28,11 +28,11 @@ module.exports = {
                 }
             },
             {
-                test: /\.css$/,
+                test: /\.(sa|sc|c)ss$/,
                 use: [
                     process.env.NODE_ENV === 'production'
                     ? MiniCssExtractPlugin.loader
-                    : 'style-loader', 'css-loader'
+                    : 'style-loader', 'css-loader', 'sass-loader' // 오른쪽부터 실행 됨
                 ]
             },
             {
