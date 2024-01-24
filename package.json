@@ -4,8 +4,9 @@
   "private": true,
   "scripts": {
     "test": "jest",
+    "dev": "node server.js ",
     "start": "node server.js",
-    "build": "webpack",
+    "build": "webpack --progress",
     "lint": "eslint ./ --fix"
   },
   "dependencies": {
@@ -21,6 +22,7 @@
     "react-scripts": "5.0.1",
     "remark": "^15.0.1",
     "remark-html": "^16.0.1",
+    "sass": "^1.70.0",
     "typescript": "^4.9.5",
     "web-vitals": "^2.1.4"
   },
@@ -52,13 +54,15 @@
     "jest": "^29.7.0",
     "mini-css-extract-plugin": "^2.7.7",
     "node-mocks-http": "^1.14.0",
+    "prettier": "^2.8.8",
     "sass-loader": "^14.0.0",
     "style-loader": "^3.3.4",
     "supertest": "^6.3.3",
     "url-loader": "^4.1.1",
     "webpack": "^5.89.0",
     "webpack-cli": "^5.1.4",
-    "webpack-dev-middleware": "^3.7.3"
+    "webpack-dev-middleware": "^3.7.3",
+    "webpack-hot-middleware": "^2.26.0"
   },
   "eslintConfig": {
     "extends": [

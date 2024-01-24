@@ -15,6 +15,16 @@ module.exports = {
         path: path.resolve(__dirname, 'dist'),
         assetModuleFilename: '[hash][ext][query]'
     },
+    devServer: {
+        port: process.env.PORT | 3001,
+        stats: 'errors-only',
+        compress: true,
+        watchContentBase: true,
+        historyApiFallback: true,
+        publicPath: '/',
+        writeToDisk: true,
+        // hot: true
+    },
     module: {
         rules: [
             {
@@ -74,6 +84,7 @@ module.exports = {
         new CleanWebpackPlugin(),
         ...(process.env.NODE_ENV === 'production'
         ?  [new MiniCssExtractPlugin({filename: '[name].css'})]
-        : [])
+        : []),
+        new webpack.HotModuleReplacementPlugin(),
     ]
 }
