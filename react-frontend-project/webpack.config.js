@@ -5,8 +5,10 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
+const mode = process.env.NODE_ENV || 'development';
+
 module.exports = {
-  mode: 'development',
+  mode,
   entry: {
     main: './src/index.js'
   },
@@ -17,13 +19,18 @@ module.exports = {
   },
   devtool: 'source-map',
   devServer: {
-    static: path.join(__dirname, 'public/'),
+    static: path.join(__dirname, '/pubilc/'),
     devMiddleware: {
       publicPath: '/dist/'
     },
     port: process.env.PORT | 3002,
-    hot: 'only'
+    hot: true
   },
+  externals: {
+    axios: 'axios'
+  },
+  optimization: {},
+  // 척을 넣으면 중복코드를 제거 해줌..
   module: {
     rules: [
       {
@@ -66,10 +73,10 @@ module.exports = {
                 Author: ${childProcess.execSync('git config user.name')}
             `
     }),
-    new webpack.DefinePlugin({
-      TWO: JSON.stringify('1+1'),
-      'api.domain': JSON.stringify('http://localhost:50001')
-    }),
+    // new webpack.DefinePlugin({
+    //   TWO: JSON.stringify('1+1'),
+    //   'api.domain': JSON.stringify('http://localhost:50001')
+    // }),
     new HtmlWebpackPlugin({
       template: './public/index.html',
       templateParameters: {
