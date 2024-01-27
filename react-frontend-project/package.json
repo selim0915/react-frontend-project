@@ -7,7 +7,8 @@
     "dev": "cross-env NODE_ENV=development && node server.js ",
     "start": "cross-env NODE_ENV=production && node server.js",
     "build": "webpack --progress",
-    "lint": "eslint ./ --fix"
+    "lint": "eslint ./ --fix",
+    "dev2": "webpack-dev-server --progress"
   },
   "dependencies": {
     "core-js": "^2.6.12",
@@ -35,7 +36,7 @@
     "@babel/plugin-transform-strict-mode": "^7.23.3",
     "@babel/preset-env": "^7.23.8",
     "@types/jest": "^27.5.2",
-    "@types/node": "^16.18.23",
+    "@types/node": "^16.18.76",
     "@types/react": "^18.2.48",
     "@types/react-dom": "^18.2.18",
     "@types/react-router-dom": "^5.3.3",
