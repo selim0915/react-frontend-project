@@ -1,0 +1,22 @@
+{
+  "configurations": [
+    {
+      "name": "CHROME",
+      "request": "launch",
+      "type": "chrome",
+      "url": "https://localhost:3000",
+      "webRoot": "${workspaceFolder}/react-frontend-project"
+    },
+    {
+      "name": "NODE",
+      "request": "launch",
+      "type": "node",
+      "runtimeArgs": ["-r", "ts-node/register"],
+      "runtimeExecutable": "node",
+      "program": "${workspaceFolder}/react-frontend-project/server.js",
+      "cwd": "${workspaceFolder}/react-frontend-project",
+      "skipFiles": ["<node_internals>/**", "node_modules/**"],
+      "sourceMaps": true
+    }
+  ]
+}
