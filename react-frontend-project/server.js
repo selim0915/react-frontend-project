@@ -1,10 +1,9 @@
 const express = require('express');
 const path = require('path');
 
-
 // TODO :: nev가 db 일때만 몽고디비 실행하게 로직 변경 필요
 // const URL= process.env.MONGOOSE_URL;
-const PORT= process.env.PORT | 3001;
+const PORT = process.env.PORT | 3001;
 const ROOT = path.resolve(__dirname, 'dist');
 
 const app = express();
@@ -21,11 +20,11 @@ const app = express();
 // webpack
 const webpack = require('webpack');
 const webpackDevMiddleware = require('webpack-dev-middleware');
-const webpackHotMiddleware = require('webpack-hot-middleware')
+const webpackHotMiddleware = require('webpack-hot-middleware');
 const webpackConfig = require('./webpack.config.js');
-const compiler  = webpack(webpackConfig);
-app.use(webpackDevMiddleware(compiler, webpackConfig.devServer));
-app.use(webpackHotMiddleware(compiler));
+const compiler = webpack(webpackConfig);
+app.use(webpackDevMiddleware(compiler));
+// app.use(webpackHotMiddleware(compiler));
 
 app.use(express.static(ROOT));
 app.use(express.json());

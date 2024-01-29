@@ -12,24 +12,24 @@ module.exports = {
     },
     "extends": [
         "eslint:recommended",
-        // "plugin:@typescript-eslint/recommended",
-        // "plugin:react/recommended",
-        // "plugin:react-hooks/recommended",
-        // "plugin:prettier/recommended",
-        // "prettier"
+        "plugin:@typescript-eslint/recommended",
+        "plugin:react/recommended",
+        "plugin:react-hooks/recommended",
+        "plugin:prettier/recommended",
+        "prettier"
     ],
-    // "plugins": [
-    //     "@typescript-eslint",
-    //     "react",
-    //     "react-hooks",
-    //     "prettier", 
-    // ],
-    // "rules": {
-    //     "prettier/prettier": [
-    //         "error", {
-    //             // "singleQuote": true,
-    //             // "jsxSingleQuote": true
-    //         }
-    //     ]
-    // }
+    "plugins": [
+        "@typescript-eslint",
+        "react",
+        "react-hooks",
+        "prettier", 
+    ],
+    "rules": {
+        "prettier/prettier": [
+            "error", {
+                // "singleQuote": true,
+                // "jsxSingleQuote": true
+            }
+        ]
+    }
 }
