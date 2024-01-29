@@ -1,0 +1,11 @@
+target.file=technical-review-project
+container.repository=hdservicedocker
+container.name=technical-review-project
+container.tag=0.0.0.32
+user=hdservicedocker
+password=guseoxhdtls24@$
+email=srwoo@hyundaiht.co.kr
+
+; $ docker build -t dp -f docker/Dockerfile .
+; $ docker run -d -p 8082:8082 --name dp-app dp
+; $ docker run -v /app/technical-review-project/src/images/ST:/app/technical-review-project/src/images/SR -d -p 8082:8082 --name dp-app dp

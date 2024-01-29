@@ -16,12 +16,7 @@ module.exports = {
         assetModuleFilename: '[hash][ext][query]'
     },
     devServer: {
-        port: process.env.PORT | 3001,
-        compress: true,
-        watchContentBase: true,
-        historyApiFallback: true,
-        publicPath: '/',
-        writeToDisk: true
+        hot: true
     },
     module: {
         rules: [
@@ -47,7 +42,7 @@ module.exports = {
                 test: /\.(jpe?g|gif|png|svg)$/,
                 type: 'asset', // webpack 5 부터 asset 모듈로 대체
                 generator: {
-                    filename: '[name][ext][query][hash]'
+                    filename: 'asset/[name][ext][query][hash]'
                 },
                 parser: {
                     dataUrlCondition: {
