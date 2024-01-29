@@ -13,6 +13,8 @@
 
 ### npm run test
 
+### npm run dev
+
 ### npm run start
 
 ### npm run build
