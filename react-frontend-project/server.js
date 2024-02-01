@@ -17,6 +17,9 @@ const app = express();
 //     console.log(err);
 // })
 
+// route
+const routes = require('./routes');
+
 // webpack
 const webpack = require('webpack');
 const webpackDevMiddleware = require('webpack-dev-middleware');
@@ -38,6 +41,7 @@ app.use(express.json());
 //     res.status(500).json({ message: error.message })
 // })
 
-app.listen(PORT, () => console.log(`Listening on ${PORT}`));
-
-module.exports = app;
+app.listen(PORT, () => {
+  console.log(`Listening on ${PORT}`);
+  routes.initialize(app);
+});
