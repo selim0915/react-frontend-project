@@ -19,10 +19,18 @@ if (false) {
 const PORT = process.env.APP_PORT || 3001;
 const ROOT = path.resolve(__dirname, 'dist');
 
+// express
 const app = express();
 
 // route
 const routes = require('./routes');
+
+// passport
+// const passport = require('passport');
+// const passportConfig = require('./passport.config');
+// passportConfig();
+// app.use(passport.initialize());
+// app.use(passport.session());
 
 // webpack
 // const webpack = require('webpack');
