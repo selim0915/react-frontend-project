@@ -1,3 +1,4 @@
+require('dotenv').config();
 const path = require('path');
 const webpack = require('webpack');
 const childProcess = require('child_process');
@@ -15,22 +16,26 @@ module.exports = {
   output: {
     filename: '[name].js',
     path: path.resolve(__dirname, 'dist'),
-    assetModuleFilename: '[hash][ext][query]'
+    // assetModuleFilename: '[hash][ext][query]',
+    publicPath: '/'
   },
   devtool: 'source-map',
   devServer: {
-    static: path.join(__dirname, '/pubilc/'),
-    devMiddleware: {
-      publicPath: '/dist/'
+    static: {
+      directory: path.resolve(__dirname, 'public'),
+      publicPath: '/'
     },
-    port: process.env.PORT | 3002,
-    hot: true
+    port: process.env.WEBPACK_PORT || 3002,
+    compress: true,
+    writeToDisk: true,
+    historyApiFallback: true,
+    hot: true,
+    client: {
+      progress: true,
+      logging: 'info',
+      overlay: true
+    }
   },
-  externals: {
-    axios: 'axios'
-  },
-  optimization: {},
-  // 척을 넣으면 중복코드를 제거 해줌..
   module: {
     rules: [
       {
@@ -53,9 +58,9 @@ module.exports = {
       },
       {
         test: /\.(jpe?g|gif|png|svg)$/,
-        type: 'asset', // webpack 5 부터 asset 모듈로 대체
+        type: 'asset/resource', // webpack 5 부터 asset 모듈로 대체
         generator: {
-          filename: '[name][ext][query][hash]'
+          filename: 'images/[name][ext]'
         },
         parser: {
           dataUrlCondition: {

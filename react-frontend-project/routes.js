@@ -17,6 +17,24 @@ function initialize(app) {
   app.get('/:productId', productController.getProductById);
   app.put('/:productId', productController.updateProduct);
   app.delete('/:productId', productController.deleteProduct);
+
+  app.get('/login', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public/index.html'), {}, function (err) {
+      if (err) {
+        console.error('err', err);
+        res.sendStatus(err.status).end();
+      }
+    });
+  });
+
+  app.get('/logout', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public/index.html'), {}, function (err) {
+      if (err) {
+        console.error('err', err);
+        res.sendStatus(err.status).end();
+      }
+    });
+  });
 }
 
 exports.initialize = initialize;
