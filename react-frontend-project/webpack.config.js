@@ -7,16 +7,14 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 const mode = process.env.NODE_ENV || 'development';
+console.log('mode: ', mode);
 
 module.exports = {
-  mode,
-  entry: {
-    main: './src/index.js'
-  },
+  mode: 'development',
+  entry: './src/index.tsx',
   output: {
     filename: '[name].js',
     path: path.resolve(__dirname, 'dist'),
-    // assetModuleFilename: '[hash][ext][query]',
     publicPath: '/'
   },
   devtool: 'source-map',
@@ -70,13 +68,16 @@ module.exports = {
       }
     ]
   },
+  resolve: {
+    extensions: ['.tsx', '.ts', '.js']
+  },
   plugins: [
     new webpack.BannerPlugin({
       banner: `
-                Build Data: ${new Date().toLocaleString()}
-                Commit Version: ${childProcess.execSync('git rev-parse --short HEAD')}
-                Author: ${childProcess.execSync('git config user.name')}
-            `
+          Build Data: ${new Date().toLocaleString()}
+          Commit Version: ${childProcess.execSync('git rev-parse --short HEAD')}
+          Author: ${childProcess.execSync('git config user.name')}
+      `
     }),
     // new webpack.DefinePlugin({
     //   TWO: JSON.stringify('1+1'),
@@ -97,6 +98,5 @@ module.exports = {
     }),
     new CleanWebpackPlugin(),
     ...(process.env.NODE_ENV === 'production' ? [new MiniCssExtractPlugin({ filename: '[name].css' })] : [])
-    // new webpack.HotModuleReplacementPlugin(),
   ]
 };
