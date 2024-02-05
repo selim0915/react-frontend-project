@@ -10,17 +10,12 @@ const mode = process.env.NODE_ENV || 'development';
 console.log('mode: ', mode);
 
 module.exports = {
-  mode,
-  entry: {
-    main: './src/index.js'
-  },
+  mode: 'development',
+  entry: './src/index.tsx',
   output: {
     filename: '[name].js',
     path: path.resolve(__dirname, 'dist'),
     publicPath: '/'
-  },
-  resolve: {
-    extensions: ['.tsx', '.ts', '.js']
   },
   devtool: 'source-map',
   devServer: {
@@ -72,6 +67,9 @@ module.exports = {
         }
       }
     ]
+  },
+  resolve: {
+    extensions: ['.tsx', '.ts', '.js']
   },
   plugins: [
     new webpack.BannerPlugin({
