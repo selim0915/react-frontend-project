@@ -12,12 +12,6 @@ function initialize(app) {
     });
   });
 
-  app.post('/', productController.createProduct);
-  app.get('/', productController.getProducts);
-  app.get('/:productId', productController.getProductById);
-  app.put('/:productId', productController.updateProduct);
-  app.delete('/:productId', productController.deleteProduct);
-
   app.get('/login', (req, res) => {
     res.sendFile(path.join(__dirname, 'public/index.html'), {}, function (err) {
       if (err) {
@@ -34,6 +28,16 @@ function initialize(app) {
         res.sendStatus(err.status).end();
       }
     });
+  });
+
+  app.post('/', productController.createProduct);
+  app.get('/', productController.getProducts);
+  app.get('/:productId', productController.getProductById);
+  app.put('/:productId', productController.updateProduct);
+  app.delete('/:productId', productController.deleteProduct);
+
+  app.use((error, req, res, next) => {
+    res.status(500).json({ message: error.message });
   });
 }
 

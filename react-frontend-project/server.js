@@ -1,20 +1,8 @@
 require('dotenv').config();
+
 const express = require('express');
 const path = require('path');
-
-if (false) {
-  const URL = process.env.MONGOOSE_URL;
-  const mongoose = require('mongoose');
-
-  mongoose
-    .connect(URL)
-    .then(() => {
-      console.log('db connected');
-    })
-    .catch((err) => {
-      console.log(err);
-    });
-}
+const db = require('./db');
 
 const PORT = process.env.APP_PORT || 3001;
 const ROOT = path.resolve(__dirname, 'dist');
@@ -40,12 +28,6 @@ const routes = require('./routes');
 app.use(express.static(ROOT));
 
 app.use(express.json());
-
-// TODO :: 공통 에러 처리 파일로 로직 변경 필요
-// express 에러처리
-// app.use((error, req, res, next) => {
-//     res.status(500).json({ message: error.message })
-// })
 
 app.listen(PORT, () => {
   console.log(`Listening on ${PORT}`);

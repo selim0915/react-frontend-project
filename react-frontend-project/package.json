@@ -5,7 +5,7 @@
   "scripts": {
     "test": "jest",
     "lint": "eslint ./ --fix",
-    "dev:db": "cross-env process.env.DB=true node server.js",
+    "dev:db": "node db.js",
     "dev:build": "cross-env NODE_ENV=development webpack serve",
     "dev:server": "cross-env NODE_ENV=development node server.js",
     "start": "cross-env NODE_ENV=production node server.js"
