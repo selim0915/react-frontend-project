@@ -88,8 +88,9 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: path.resolve(__dirname, 'public', 'index.html'),
       templateParameters: {
-        env: mode === 'development' ? '(dev)' : '(prod)'
+        title: mode === 'development' ? 'DEV SAMPEOPLE' : 'SAMPEOPLE'
       },
+      favicon: path.resolve(__dirname, 'public', 'favicon.ico'),
       minify:
         mode === 'production'
           ? {

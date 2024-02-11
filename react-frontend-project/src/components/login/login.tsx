@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { CommonButton } from '../../style/common.style';
 
 const Login: React.FC = () => {
   const [id, setId] = useState<string>('');
@@ -22,6 +23,7 @@ const Login: React.FC = () => {
   const login = () => {
     if (id && password) {
       localStorage.setItem('token', 'abcdefg');
+      localStorage.setItem('id', id);
       window.location.href = '/';
     } else {
       alert('아이디와 비밀번호를 확인하세요.');
@@ -46,9 +48,9 @@ const Login: React.FC = () => {
         onKeyDown={_onKeyDownEnter}
         placeholder={'비밀번호를 입력하세요'}
       />
-      <button type='button' onClick={login}>
+      <CommonButton type='button' onClick={login}>
         로그인
-      </button>
+      </CommonButton>
     </div>
   );
 };

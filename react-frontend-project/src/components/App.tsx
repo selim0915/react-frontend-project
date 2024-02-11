@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Login from './login/Login';
-import Board from './board/Board';
-import Header from './layout/Header';
-import Main from './layout/Main';
+import { BrowserRouter as Router } from 'react-router-dom';
+import Content from './layout/Content';
 import Footer from './layout/Footer';
+import Header from './layout/Header';
+import Nav from './layout/Nav';
 
 const App: React.FC = () => {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(!!localStorage.getItem('token'));
@@ -15,20 +14,14 @@ const App: React.FC = () => {
   }, []);
 
   return (
-    <div>
-      {isLoggedIn ? <Header /> : null}
-      <Routes>
-        {!isLoggedIn ? (
-          <Route path='/' element={<Login />} />
-        ) : (
-          <>
-            <Route path='/' element={<Main />} />
-            <Route path='/board/*' element={<Board />} />
-          </>
-        )}
-      </Routes>
-      <Footer />
-    </div>
+    <>
+      <Router>
+        <Header isLoggedIn={isLoggedIn} />
+        {isLoggedIn && <Nav isLoggedIn={isLoggedIn} />}
+        <Content isLoggedIn={isLoggedIn} />
+        {isLoggedIn && <Footer />}
+      </Router>
+    </>
   );
 };
 

@@ -5,10 +5,16 @@ const GlobalStyle = createGlobalStyle`
   }
 
   body {
-    font-family: sans-serif;
     margin: 0 auto;
     padding: 0;
-    background-color: #e2e2e2;
+    font-size: 12px;
+    text-align: center;
+  }
+
+  ul, li {
+    margin: 0;
+    padding: 0;
+    list-style: none;
   }
 `;
 

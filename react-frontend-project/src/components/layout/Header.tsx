@@ -1,19 +1,43 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { StyledHeader, StyledHeaderLogo, StyledHeaderItem, StyledHeaderItemWrap } from '../../style/layout.style';
+import { sampeople } from '../../utils/image.import';
 
-const Header: React.FC = () => {
-  const _onClick = () => {
-    localStorage.clear();
+interface HeaderProp {
+  isLoggedIn: boolean;
+}
+
+const Header: React.FC<HeaderProp> = ({ isLoggedIn }) => {
+  const logo = () => {
     window.location.href = '/';
   };
 
+  const login = () => {
+    window.location.href = '/login';
+  };
+
+  const logout = () => {
+    localStorage.clear();
+    window.location.href = '/login';
+  };
+
   return (
-    <>
-      <Link to='/'>
-        <h1>Header</h1>
-      </Link>
-      <span onClick={_onClick}>로그아웃</span>
-    </>
+    <StyledHeader>
+      <StyledHeaderLogo src={sampeople} alt='logo' onClick={logo} />
+      <StyledHeaderItemWrap>
+        {isLoggedIn ? (
+          <>
+            <StyledHeaderItem>{localStorage.getItem('id')}님</StyledHeaderItem>
+            <StyledHeaderItem className='event' onClick={logout}>
+              로그아웃
+            </StyledHeaderItem>
+          </>
+        ) : (
+          <StyledHeaderItem className='event' onClick={login}>
+            로그인
+          </StyledHeaderItem>
+        )}
+      </StyledHeaderItemWrap>
+    </StyledHeader>
   );
 };
 
