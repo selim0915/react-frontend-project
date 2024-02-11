@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Login from './login/Login';
 import Board from './board/Board';
@@ -7,14 +7,25 @@ import Main from './layout/Main';
 import Footer from './layout/Footer';
 
 const App: React.FC = () => {
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(!!localStorage.getItem('token'));
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    setIsLoggedIn(!!token);
+  }, []);
+
   return (
     <div>
-      <Header />
+      {isLoggedIn ? <Header /> : null}
       <Routes>
-        <Route path='/' element={<Main />} />
-        <Route path='/login' element={<Login />} />
-        <Route path='/board/*' element={<Board />} />
-        <Route path='*' element={<Login />} />
+        {!isLoggedIn ? (
+          <Route path='/' element={<Login />} />
+        ) : (
+          <>
+            <Route path='/' element={<Main />} />
+            <Route path='/board/*' element={<Board />} />
+          </>
+        )}
       </Routes>
       <Footer />
     </div>
