@@ -9,7 +9,7 @@ const mode = process.env.NODE_ENV || 'development';
 console.log('mode: ', mode);
 
 module.exports = {
-  mode: 'development',
+  mode: mode,
   entry: './src/index.tsx',
   output: {
     filename: '[name].js',
@@ -51,7 +51,7 @@ module.exports = {
       {
         test: /\.(sa|sc|c)ss$/,
         use: [
-          process.env.NODE_ENV === 'production' ? MiniCssExtractPlugin.loader : 'style-loader',
+          mode === 'production' ? MiniCssExtractPlugin.loader : 'style-loader',
           'css-loader',
           'sass-loader' // 오른쪽부터 실행 됨
         ]
@@ -86,18 +86,18 @@ module.exports = {
     //   'api.domain': JSON.stringify('http://localhost:50001')
     // }),
     new HtmlWebpackPlugin({
-      template: './public/index.html',
+      template: path.resolve(__dirname, 'public', 'index.html'),
       templateParameters: {
-        env: process.env.NODE_ENV === 'development' ? '(dev)' : '(prod)'
+        env: mode === 'development' ? '(dev)' : '(prod)'
       },
       minify:
-        process.env.NODE_ENV === 'production'
+        mode === 'production'
           ? {
               collapseWhitespace: true,
               removeComments: true
             }
           : false
     }),
-    ...(process.env.NODE_ENV === 'production' ? [new MiniCssExtractPlugin({ filename: '[name].css' })] : [])
+    ...(mode === 'production' ? [new MiniCssExtractPlugin({ filename: '[name].css' })] : [])
   ]
 };

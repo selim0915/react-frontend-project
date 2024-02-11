@@ -1,16 +1,23 @@
-import React from 'react';
+import React, { Component } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Login from './login/Login';
 import Board from './board/Board';
+import Header from './layout/Header';
+import Main from './layout/Main';
+import Footer from './layout/Footer';
 
 const App: React.FC = () => {
   return (
-    <Router>
+    <div>
+      <Header />
       <Routes>
-        <Route path='/' element={<Login />} />
-        <Route path='/board' element={<Board />} />
+        <Route path='/' element={<Main />} />
+        <Route path='/login' element={<Login />} />
+        <Route path='/board/*' element={<Board />} />
+        <Route path='*' element={<Login />} />
       </Routes>
-    </Router>
+      <Footer />
+    </div>
   );
 };
 

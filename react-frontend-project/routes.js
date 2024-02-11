@@ -4,7 +4,7 @@ const productController = require('./controller/products');
 function initialize(app) {
   app.get('*', (req, res) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
-    res.sendFile(path.join(__dirname, 'public/index.html'), {}, function (err) {
+    res.sendFile(path.join(__dirname, 'dist', 'index.html'), {}, function (err) {
       if (err) {
         console.error('err', err);
         res.sendStatus(err.status).end();
