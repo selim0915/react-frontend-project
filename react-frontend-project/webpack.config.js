@@ -1,21 +1,21 @@
 require('dotenv').config();
 const path = require('path');
-const webpack = require('webpack');
-const childProcess = require('child_process');
+// const webpack = require('webpack');
+// const childProcess = require('child_process');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 const mode = process.env.NODE_ENV || 'development';
 console.log('mode: ', mode);
 
 module.exports = {
-  mode: 'development',
+  mode: mode,
   entry: './src/index.tsx',
   output: {
     filename: '[name].js',
     path: path.resolve(__dirname, 'dist'),
-    publicPath: '/'
+    publicPath: '/',
+    clean: true
   },
   devtool: 'source-map',
   devServer: {
@@ -25,13 +25,15 @@ module.exports = {
     },
     port: process.env.WEBPACK_PORT || 3002,
     compress: true,
-    writeToDisk: true,
     historyApiFallback: true,
     hot: true,
     client: {
       progress: true,
       logging: 'info',
       overlay: true
+    },
+    devMiddleware: {
+      writeToDisk: true
     }
   },
   module: {
@@ -49,7 +51,7 @@ module.exports = {
       {
         test: /\.(sa|sc|c)ss$/,
         use: [
-          process.env.NODE_ENV === 'production' ? MiniCssExtractPlugin.loader : 'style-loader',
+          mode === 'production' ? MiniCssExtractPlugin.loader : 'style-loader',
           'css-loader',
           'sass-loader' // 오른쪽부터 실행 됨
         ]
@@ -72,31 +74,31 @@ module.exports = {
     extensions: ['.tsx', '.ts', '.js']
   },
   plugins: [
-    new webpack.BannerPlugin({
-      banner: `
-          Build Data: ${new Date().toLocaleString()}
-          Commit Version: ${childProcess.execSync('git rev-parse --short HEAD')}
-          Author: ${childProcess.execSync('git config user.name')}
-      `
-    }),
+    // new webpack.BannerPlugin({
+    //   banner: `
+    //     Build Data: ${new Date().toLocaleString()}
+    //     Commit Version: ${childProcess.execSync('git rev-parse --short HEAD')}
+    //     Author: ${childProcess.execSync('git config user.name')}
+    //   `
+    // }),
     // new webpack.DefinePlugin({
     //   TWO: JSON.stringify('1+1'),
     //   'api.domain': JSON.stringify('http://localhost:50001')
     // }),
     new HtmlWebpackPlugin({
-      template: './public/index.html',
+      template: path.resolve(__dirname, 'public', 'index.html'),
       templateParameters: {
-        env: process.env.NODE_ENV === 'development' ? '(dev)' : '(prod)'
+        title: mode === 'development' ? 'DEV SAMPEOPLE' : 'SAMPEOPLE'
       },
+      favicon: path.resolve(__dirname, 'public', 'favicon.ico'),
       minify:
-        process.env.NODE_ENV === 'production'
+        mode === 'production'
           ? {
               collapseWhitespace: true,
               removeComments: true
             }
           : false
     }),
-    new CleanWebpackPlugin(),
-    ...(process.env.NODE_ENV === 'production' ? [new MiniCssExtractPlugin({ filename: '[name].css' })] : [])
+    ...(mode === 'production' ? [new MiniCssExtractPlugin({ filename: '[name].css' })] : [])
   ]
 };

@@ -1,19 +1,21 @@
 import { createGlobalStyle } from 'styled-components';
-import reset from 'styled-reset';
 
 const GlobalStyle = createGlobalStyle`
-    ${reset}
+  html {
+  }
 
-    html {
-        font-size: 10px;
-    }
-    
-    body {
-        font-family: sans-serif;
-        margin: 0 auto;
-        padding: 0;
-        background-color: aqua;
-    }
+  body {
+    margin: 0 auto;
+    padding: 0;
+    font-size: 12px;
+    text-align: center;
+  }
+
+  ul, li {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
 `;
 
 export default GlobalStyle;
