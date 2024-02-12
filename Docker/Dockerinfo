@@ -10,6 +10,11 @@ docker build -t dp -f ../docker/Dockerfile ../
 docker run -d -p 8082:50001 --name dp-app dp
 docker run -v /C/Users/srwoo/Desktop/sampeople:/app/react-frontend-project/src/images/ST -d -p 8082:50001 --name dp-app dp
 
+docker run -v /app/react-frontend-project/src/images/ST2:/app/react-frontend-project/src/images/ST -d -p 8082:50001 --name dp-app dp
+docker run -v /C/Users/srwoo/Desktop/sampeople:/app/react-frontend-project -d -p 8082:50001 --name dp-app dp
+docker run -v /c/Users/srwoo/Desktop/sampeople:/app/react-frontend-project/src/images/ST -d -p 8082:50001 --name dp-app dp
+
+
 
 # docker run -t -i -v <host_dir>:<container_dir>  ubuntu /bin/bash
 # 컨테이너 내부의 디렉토리는 /app/react-frontend-project/asset/png
