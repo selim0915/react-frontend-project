@@ -25,6 +25,7 @@ const routes = require('./routes');
 // const webpackConfig = require('./webpack.config.js');
 // const compiler = webpack(webpackConfig);
 // app.use(require('webpack-dev-middleware')(compiler, webpackConfig.devServer));
+app.use('/src/images/ST', express.static(path.join(__dirname, 'src', 'images', 'ST')));
 app.use(express.static(ROOT));
 
 app.use(express.json());
