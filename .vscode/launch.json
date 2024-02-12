@@ -4,7 +4,7 @@
       "name": "CHROME",
       "request": "launch",
       "type": "chrome",
-      "url": "https://localhost:3000",
+      "url": "http://localhost:50001",
       "webRoot": "${workspaceFolder}/react-frontend-project"
     },
     {

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { CommonButton } from '../../style/common.style';
+import { LoginButton, LoginInput, LoginWrap } from '../../style/login.style';
 
 const Login: React.FC = () => {
   const [id, setId] = useState<string>('');
@@ -31,27 +31,30 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div>
-      <input
-        type='text'
-        id='id'
-        value={id}
-        onChange={_onChange}
-        onKeyDown={_onKeyDownEnter}
-        placeholder={'아이디를 입력하세요'}
-      />
-      <input
-        type='password'
-        id='password'
-        value={password}
-        onChange={_onChange}
-        onKeyDown={_onKeyDownEnter}
-        placeholder={'비밀번호를 입력하세요'}
-      />
-      <CommonButton type='button' onClick={login}>
-        로그인
-      </CommonButton>
-    </div>
+    <>
+      <LoginWrap>
+        <h1>SAMPEOPLE</h1>
+        <LoginInput
+          type='text'
+          id='id'
+          value={id}
+          onChange={_onChange}
+          onKeyDown={_onKeyDownEnter}
+          placeholder={'아이디를 입력하세요'}
+        />
+        <LoginInput
+          type='password'
+          id='password'
+          value={password}
+          onChange={_onChange}
+          onKeyDown={_onKeyDownEnter}
+          placeholder={'비밀번호를 입력하세요'}
+        />
+        <LoginButton type='button' onClick={login}>
+          로그인
+        </LoginButton>
+      </LoginWrap>
+    </>
   );
 };
 

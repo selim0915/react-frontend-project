@@ -60,7 +60,7 @@ module.exports = {
         test: /\.(jpe?g|gif|png|svg)$/,
         type: 'asset/resource', // webpack 5 부터 asset 모듈로 대체
         generator: {
-          filename: 'images/[name][ext]'
+          // filename: 'images/[name][ext]'
         },
         parser: {
           dataUrlCondition: {

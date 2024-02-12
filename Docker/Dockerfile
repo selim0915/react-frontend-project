@@ -10,29 +10,17 @@
 # ENTRYPOINT npm start && bash
 
 
-FROM node:20.11.0
-LABEL email srwoo@hyundaiht.co.kr
+FROM node:18.19.0
+LABEL email selim0915@gmail.com
 LABEL name srwoo
 
 RUN mkdir -p /app
-RUN mkdir -p /home/technical-review-project
+RUN mkdir -p /home/react-frontend-project
 WORKDIR /app
 ADD . /app
-WORKDIR /app/technical-review-project
+WORKDIR /app/react-frontend-project
 RUN npm install
+# VOLUME ["/app/react-frontend-project/asset/png", "/c/Users/srwoo/Desktop/sampeople"]
 
 EXPOSE 8082
-CMD ["npm", "run", "dev"]
-
-
-# syntax = docker/dockerfile:1.0-experimental
-# FROM node:8.11.3-alpine
-
-# WORKDIR /private-app
-# COPY . /private-app
-
-# RUN --mount=type=secret,id=npm,target=/root/.npmrc npm install
-
-# EXPOSE 3000
-
-# CMD ["node","index.js"]
+CMD ["npm", "run", "start"]
