@@ -20,7 +20,10 @@ WORKDIR /app
 ADD . /app
 WORKDIR /app/react-frontend-project
 RUN npm install
-# VOLUME ["/app/react-frontend-project/asset/png", "/c/Users/srwoo/Desktop/sampeople"]
+
+# 리눅스 파일 시스템 이미지 파일을 컨테이너 내부 정적 파일 경로에 마운트
+# VOLUME ["/c/Users/srwoo/Desktop/sampeople:/app/react-frontend-project/src/images/ST"]
+# VOLUME ["/path/to/linux/filesystem:/usr/src/app/src/images/ST"]
 
 EXPOSE 8082
 CMD ["npm", "run", "start"]

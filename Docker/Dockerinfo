@@ -8,13 +8,15 @@ email=srwoo@hyundaiht.co.kr
 
 docker build -t dp -f ../docker/Dockerfile ../
 docker run -d -p 8082:50001 --name dp-app dp
-# docker run -v /app/react-frontend-project/asset/png:/c/Users/srwoo/Desktop/sampeople -d -p 8082:50001 --name dp-app dp
-docker run -v /c/Users/srwoo/Desktop/sampeople:/app/react-frontend-project/asset/png -d -p 8082:50001 --name dp-app dp
+docker run -v /C/Users/srwoo/Desktop/sampeople:/app/react-frontend-project/src/images/ST -d -p 8082:50001 --name dp-app dp
+
 
 # docker run -t -i -v <host_dir>:<container_dir>  ubuntu /bin/bash
 # 컨테이너 내부의 디렉토리는 /app/react-frontend-project/asset/png
 # 호스트의 디렉토리는 C:\Users\srwoo\Desktop\sampeople
 
+
+# http://localhost:50001/src/images/ST/netflix.png
 # 테스트 방법
 # 호스트 시스템에서 마운트된 디렉토리에 접근하여 파일을 추가하거나 제거합니다.
 # 컨테이너 내부에서 파일 변경 사항을 확인합니다.
