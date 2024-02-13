@@ -15,7 +15,7 @@ function initialize(app) {
   app.get('/src/images/ST/*', (req, res) => {
     let _path = req.path;
     let _pathPosition = _path.lastIndexOf('/') + 1;
-    let _pathList = _path.split('/');
+    // let _pathList = _path.split('/');
     let _fileName = _path.substring(_pathPosition);
     let _ST_filePath = path.join(__dirname, 'src/images/ST');
     // let _ST_filePath2 = _pathList[_pathList.length - 2] !== 'ST' ? _pathList[_pathList.length - 2] : '';

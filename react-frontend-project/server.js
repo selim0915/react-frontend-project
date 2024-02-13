@@ -25,7 +25,13 @@ const routes = require('./routes');
 // const webpackConfig = require('./webpack.config.js');
 // const compiler = webpack(webpackConfig);
 // app.use(require('webpack-dev-middleware')(compiler, webpackConfig.devServer));
-app.use('/src/images/ST', express.static(path.join(__dirname, 'src', 'images', 'ST')));
+// app.use('/src/images/ST', express.static(path.join(__dirname, 'src', 'images', 'ST')));
+// app.use('/src/images/ST', express.static('\Program Files\Git\app\react-frontend-project\src\images\ST'));
+// app.use(
+//   '/src/images/ST',
+//   express.static(path.join(__dirname, '/Program Files/Git/app/react-frontend-project/src/images/ST'))
+// );
+
 app.use(express.static(ROOT));
 
 app.use(express.json());
