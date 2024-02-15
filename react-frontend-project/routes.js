@@ -2,6 +2,12 @@ const path = require('path');
 const productController = require('./controller/products');
 
 function initialize(app) {
+  app.post('/product', productController.createProduct);
+  app.get('/product/list', productController.getProducts);
+  app.get('/product/:productId', productController.getProductById);
+  app.put('/product/:productId', productController.updateProduct);
+  app.delete('/product/:productId', productController.deleteProduct);
+
   app.get('/hello', (req, res) => {
     res.sendFile(path.join(__dirname, 'src/images/ST/netflix.png'), {}, (err) => {
       if (err) {
@@ -10,12 +16,6 @@ function initialize(app) {
       }
     });
   });
-
-  app.post('/', productController.createProduct);
-  app.get('/', productController.getProducts);
-  app.get('/:productId', productController.getProductById);
-  app.put('/:productId', productController.updateProduct);
-  app.delete('/:productId', productController.deleteProduct);
 
   app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'dist', 'index.html'), {}, function (err) {
