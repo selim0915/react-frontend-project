@@ -1,6 +1,6 @@
 require('dotenv').config();
 const path = require('path');
-// const webpack = require('webpack');
+const webpack = require('webpack');
 // const childProcess = require('child_process');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
@@ -81,10 +81,9 @@ module.exports = {
     //     Author: ${childProcess.execSync('git config user.name')}
     //   `
     // }),
-    // new webpack.DefinePlugin({
-    //   TWO: JSON.stringify('1+1'),
-    //   'api.domain': JSON.stringify('http://localhost:50001')
-    // }),
+    new webpack.DefinePlugin({
+      'process.env': JSON.stringify(process.env)
+    }),
     new HtmlWebpackPlugin({
       template: path.resolve(__dirname, 'public', 'index.html'),
       templateParameters: {
