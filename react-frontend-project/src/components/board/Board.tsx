@@ -1,11 +1,11 @@
-import axios from 'axios';
 import React, { useEffect, useState } from 'react';
+import api from '../../utils/api';
 
 const Board: React.FC = () => {
   const [productList, setProductList] = useState<any[]>([]);
 
   useEffect(() => {
-    axios
+    api
       .get('/product/list')
       .then(function (res) {
         setProductList(res.data);
