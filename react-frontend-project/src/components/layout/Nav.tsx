@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyledNav, StyledNavItemWrap, StyledNavItem, StyledNavItemIink } from '../../style/layout.style';
+import { StyledNav, StyledNavItemWrap, StyledNavItem, StyledNavItemIink } from '../../styles/layout.style';
 
 interface NavProp {
   isLoggedIn: boolean;

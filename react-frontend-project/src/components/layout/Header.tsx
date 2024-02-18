@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyledHeader, StyledHeaderLogo, StyledHeaderItem, StyledHeaderItemWrap } from '../../style/layout.style';
+import { StyledHeader, StyledHeaderLogo, StyledHeaderItem, StyledHeaderItemWrap } from '../../styles/layout.style';
 import { sampeople } from '../../utils/image.import';
 
 interface HeaderProp {

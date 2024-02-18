@@ -8,15 +8,6 @@ function initialize(app) {
   app.put('/product/:productId', productController.updateProduct);
   app.delete('/product/:productId', productController.deleteProduct);
 
-  app.get('/hello', (req, res) => {
-    res.sendFile(path.join(__dirname, 'src/images/ST/netflix.png'), {}, (err) => {
-      if (err) {
-        console.error('err', err);
-        res.status(404).send('no such file or directory.');
-      }
-    });
-  });
-
   app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'dist', 'index.html'), {}, function (err) {
       if (err) {

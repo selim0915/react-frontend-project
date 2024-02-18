@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { LoginButton, LoginInput, LoginWrap } from '../../styles/login.style';
 
-const Login: React.FC = () => {
+const Signup: React.FC = () => {
   const [id, setId] = useState<string>('');
   const [password, setPassword] = useState<string>('');
 
@@ -33,7 +33,7 @@ const Login: React.FC = () => {
   return (
     <>
       <LoginWrap>
-        <h1>SAMPEOPLE</h1>
+        <h1>회원가입</h1>
         <LoginInput
           type='text'
           id='id'
@@ -58,4 +58,4 @@ const Login: React.FC = () => {
   );
 };
 
-export default Login;
+export default Signup;
