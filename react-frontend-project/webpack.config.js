@@ -1,16 +1,16 @@
 require('dotenv').config();
 const path = require('path');
 const webpack = require('webpack');
-// const childProcess = require('child_process');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
-const mode = process.env.NODE_ENV || 'development';
-console.log('mode: ', mode);
+const mode = process.env.NODE_ENV;
 
 module.exports = {
-  mode: mode,
-  entry: './src/index.tsx',
+  mode,
+  entry: {
+    app: mode === 'production' ? ['./src/index.tsx'] : ['webpack-hot-middleware/client?reload=true', './src/index.tsx']
+  },
   output: {
     filename: '[name].js',
     path: path.resolve(__dirname, 'dist'),
@@ -27,13 +27,8 @@ module.exports = {
     compress: true,
     historyApiFallback: true,
     hot: true,
-    client: {
-      progress: true,
-      logging: 'info',
-      overlay: true
-    },
     devMiddleware: {
-      writeToDisk: true
+      // writeToDisk: true
     }
   },
   module: {
@@ -58,10 +53,7 @@ module.exports = {
       },
       {
         test: /\.(jpe?g|gif|png|svg)$/,
-        type: 'asset/resource', // webpack 5 부터 asset 모듈로 대체
-        generator: {
-          // filename: 'images/[name][ext]'
-        },
+        type: 'asset/resource',
         parser: {
           dataUrlCondition: {
             maxSize: 20 * 1024 // 20KB
@@ -74,22 +66,15 @@ module.exports = {
     extensions: ['.tsx', '.ts', '.js']
   },
   plugins: [
-    // new webpack.BannerPlugin({
-    //   banner: `
-    //     Build Data: ${new Date().toLocaleString()}
-    //     Commit Version: ${childProcess.execSync('git rev-parse --short HEAD')}
-    //     Author: ${childProcess.execSync('git config user.name')}
-    //   `
-    // }),
     new webpack.DefinePlugin({
       'process.env': JSON.stringify(process.env)
     }),
     new HtmlWebpackPlugin({
+      favicon: path.resolve(__dirname, 'public', 'favicon.ico'),
       template: path.resolve(__dirname, 'public', 'index.html'),
       templateParameters: {
         title: mode === 'development' ? 'DEV SAMPEOPLE' : 'SAMPEOPLE'
       },
-      favicon: path.resolve(__dirname, 'public', 'favicon.ico'),
       minify:
         mode === 'production'
           ? {
@@ -98,6 +83,7 @@ module.exports = {
             }
           : false
     }),
+    new webpack.HotModuleReplacementPlugin(),
     ...(mode === 'production' ? [new MiniCssExtractPlugin({ filename: '[name].css' })] : [])
   ]
 };

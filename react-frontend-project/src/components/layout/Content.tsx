@@ -1,7 +1,7 @@
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
 import { routeConfig } from '../../../route';
-import { StyledArticle } from '../../style/layout.style';
+import { StyledArticle } from '../../styles/layout.style';
 
 interface ContentProp {
   isLoggedIn: boolean;
