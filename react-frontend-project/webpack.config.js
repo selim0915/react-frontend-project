@@ -23,7 +23,7 @@ module.exports = {
       directory: path.resolve(__dirname, 'public'),
       publicPath: '/'
     },
-    port: process.env.WEBPACK_PORT || 3002,
+    port: 50002,
     compress: true,
     historyApiFallback: true,
     hot: true,

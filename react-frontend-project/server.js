@@ -1,18 +1,18 @@
+const express = require('express');
 require('dotenv').config();
 
-const express = require('express');
 const path = require('path');
-const db = require('./db');
+const { createProxyMiddleware } = require('http-proxy-middleware');
 
-const PORT = process.env.APP_PORT || 3001;
 const ROOT = path.resolve(__dirname, 'dist');
 const isProd = process.env.NODE_ENV === 'production';
 
 const app = express();
 
-// route
-const routes = require('./routes');
-routes.initialize(app);
+// proxy
+const { proxyConfig } = require('./proxy.config');
+const proxy = createProxyMiddleware(proxyConfig);
+app.use('/proxy/db*', proxy);
 
 // webpack
 const webpack = require('webpack');
@@ -54,6 +54,7 @@ if (isProd) {
 
 app.use(express.json());
 
+const PORT = 50001;
 app.listen(PORT, () => {
   console.log(`Listening on ${PORT}`);
 });

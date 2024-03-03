@@ -6,7 +6,7 @@ const Board: React.FC = () => {
 
   useEffect(() => {
     api
-      .get('/product/list')
+      .get('/proxy/db/product/list')
       .then(function (res) {
         setProductList(res.data);
       })

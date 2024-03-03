@@ -1,0 +1,6 @@
+react-frontend-project/node_modules/
+react-frontend-project/dist/
+
+server/node_modules/.bin/mime.ps1
+server/node_modules/
+server/.env
