@@ -1,6 +1,6 @@
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
-import { routeConfig } from '../../../route';
+import { routeConfig } from '../../constants/route';
 import { StyledArticle } from '../../styles/layout.style';
 
 interface ContentProp {

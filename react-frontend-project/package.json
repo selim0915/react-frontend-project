@@ -5,10 +5,9 @@
   "scripts": {
     "test": "jest",
     "lint": "eslint ./ --fix",
-    "dev:db": "node db.js",
-    "dev:build": "cross-env NODE_ENV=development webpack serve",
-    "dev:server": "cross-env NODE_ENV=development node server.js",
-    "start": "cross-env NODE_ENV=production webpack && node server.js"
+    "dev:build": "cross-env NODE_ENV=development webpack serve --config webpack.config",
+    "dev:server": "cross-env NODE_ENV=development node ./config/server.js",
+    "start": "cross-env NODE_ENV=production node ./config/server.js"
   },
   "dependencies": {
     "axios": "^1.6.7",

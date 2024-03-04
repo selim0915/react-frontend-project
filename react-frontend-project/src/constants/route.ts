@@ -1,7 +1,7 @@
-import Login from './src/components/login/Login';
-import Board from './src/components/board/Board';
-import Chat from './src/components/chat/Chat';
-import Main from './src/components/main/Main';
+import Login from '../components/login/Login';
+import Board from '../components/board/Board';
+import Chat from '../components/chat/Chat';
+import Main from '../components/main/Main';
 
 export const routeConfig = [
   {
