@@ -5,14 +5,14 @@
       "request": "launch",
       "type": "chrome",
       "url": "http://localhost:50001",
-      "webRoot": "${workspaceFolder}/react-frontend-project"
+      "webRoot": "${workspaceFolder}/frontend"
     },
     {
       "type": "node",
       "request": "launch",
       "name": "Node (react-frontend-project)",
-      "program": "${workspaceFolder}/react-frontend-project/server.js",
-      "cwd": "${workspaceFolder}/react-frontend-project",
+      "program": "${workspaceFolder}/frontend/server/server.js",
+      "cwd": "${workspaceFolder}/frontend",
       "skipFiles": ["<node_internals>/**"],
       "env": {
         "NODE_ENV": "development"

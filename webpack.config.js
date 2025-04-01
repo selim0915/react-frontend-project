@@ -8,10 +8,10 @@ const mode = process.env.NODE_ENV;
 
 module.exports = {
   mode,
-  entry: path.resolve(__dirname, '../src/index.tsx'),
+  entry: path.resolve(__dirname, './front/src/index.tsx'),
   output: {
     filename: '[name].js',
-    path: path.resolve(__dirname, '../dist'),
+    path: path.resolve(__dirname, './dist'),
     publicPath: '/',
     clean: true,
   },
@@ -63,8 +63,8 @@ module.exports = {
       'process.env': JSON.stringify(process.env),
     }),
     new HtmlWebpackPlugin({
-      template: path.resolve(__dirname, '../public', 'index.html'),
-      favicon: path.resolve(__dirname, '../public', 'favicon.ico'),
+      template: path.resolve(__dirname, './front/public', 'index.html'),
+      favicon: path.resolve(__dirname, './front/public', 'favicon.ico'),
       templateParameters: {
         title: mode === 'development' ? 'DEV SAMPEOPLE' : 'SAMPEOPLE',
       },

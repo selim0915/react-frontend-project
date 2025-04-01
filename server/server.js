@@ -15,14 +15,14 @@ const app = express();
 app.use(cors());
 
 // route
-const routes = require('./routes');
+const routes = require('./routes/product');
 routes.initialize(app);
 
 if (isProd) {
   app.use(express.static(ROOT));
 
-  app.get('*', (req, res, next) => {
-    res.sendFile(path.join(__dirname, 'dist', 'index.html'), {}, function (err) {
+  app.get('*', (_req, res, _next) => {
+    res.sendFile(path.join(__dirname, '../dist', 'index.html'), {}, function (err) {
       if (err) {
         res.sendStatus(err.status).end();
       }
@@ -32,7 +32,7 @@ if (isProd) {
   // webpack
   const webpack = require('webpack');
   const webpackDevMiddleware = require('webpack-dev-middleware');
-  const webpackConfig = require('../webpack/webpack.config');
+  const webpackConfig = require('../webpack.config');
   const compiler = webpack(webpackConfig);
 
   app.use(

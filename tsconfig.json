@@ -3,23 +3,15 @@
     "outDir": "./dist",
     "sourceMap": true,
     "target": "es5",
-    "lib": ["es5", "es6", "es2015", "es2016", "dom"],
-    "allowJs": true,
-    "skipLibCheck": true,
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "strict": true,
-    "strictNullChecks": true,
-    "forceConsistentCasingInFileNames": true,
-    "noFallthroughCasesInSwitch": true,
     "module": "esnext",
+    "jsx": "react-jsx",
     "moduleResolution": "node",
+    "strict": true,
     "resolveJsonModule": true,
-    "isolatedModules": true,
-    "noImplicitAny": true,
-    "noImplicitThis": true,
-    "jsx": "react"
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true
   },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules"]
+  "include": ["front/src/**/*", "server/**/*", "**/*.js"],
+  "exclude": ["node_modules", "dist"]
 }

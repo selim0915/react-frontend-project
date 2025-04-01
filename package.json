@@ -6,8 +6,8 @@
     "test": "jest",
     "lint": "eslint ./ --fix",
     "dev:db": "node db.js",
-    "build": "cross-env NODE_ENV=development webpack --config ./webpack/webpack.config.js",
-    "dev": "cross-env NODE_ENV=development webpack serve --config ./webpack/webpack.config.js",
+    "build": "cross-env NODE_ENV=development webpack --config ./webpack.config.js",
+    "dev": "cross-env NODE_ENV=development webpack serve --config ./webpack.config.js",
     "start": "npm run build && node ./server/server.js"
   },
   "engines": {
