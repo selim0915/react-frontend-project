@@ -1,8 +1,2 @@
-target.file=react-frontend-project
-container.repository=servicedocker
-container.name=react-frontend-project
-container.tag=0.0.0.1
-
-docker build -t dp -f ../docker/Dockerfile ../
-docker run -d -p 8082:50001 --name dp-app dp
-docker run -v /C/Users/srwoo/Desktop/sampeople:/app/react-frontend-project/src/images/ST -d -p 8082:50001 --name dp-app dp
+# docker build -t dp -f ../docker/Dockerfile ../
+# docker run -d -p 80:50001 --name dp-app dp

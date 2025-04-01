@@ -8,15 +8,15 @@
       "webRoot": "${workspaceFolder}/react-frontend-project"
     },
     {
-      "name": "NODE",
-      "request": "launch",
       "type": "node",
-      "runtimeArgs": ["-r", "ts-node/register"],
-      "runtimeExecutable": "node",
+      "request": "launch",
+      "name": "Node (react-frontend-project)",
       "program": "${workspaceFolder}/react-frontend-project/server.js",
       "cwd": "${workspaceFolder}/react-frontend-project",
-      "skipFiles": ["<node_internals>/**", "node_modules/**"],
-      "sourceMaps": true
+      "skipFiles": ["<node_internals>/**"],
+      "env": {
+        "NODE_ENV": "development"
+      }
     }
   ]
 }

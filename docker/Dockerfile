@@ -9,5 +9,5 @@ ADD . /app
 WORKDIR /app/react-frontend-project
 RUN npm install
 
-EXPOSE 8082
+EXPOSE 80
 CMD ["npm", "run", "start"]
