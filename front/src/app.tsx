@@ -16,7 +16,12 @@ const App: React.FC = () => {
 
   return (
     <StyledMain>
-      <Router>
+      <Router
+        future={{
+          v7_relativeSplatPath: true,
+          v7_startTransition: true,
+        }}
+      >
         <Header isLoggedIn={isLoggedIn} />
         {isLoggedIn && <Nav isLoggedIn={isLoggedIn} />}
         <StyledArticle>
