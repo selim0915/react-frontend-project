@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { LoginButton, LoginInput, LoginWrap } from '../../styles/login.style';
+import { CommonButton, CommonForm, CommonInput } from '../../styles/common.style';
 
 const Signup: React.FC = () => {
   const [id, setId] = useState<string>('');
@@ -14,13 +14,9 @@ const Signup: React.FC = () => {
     }
   };
 
-  const _onKeyDownEnter = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.keyCode === 13) {
-      login();
-    }
-  };
+  const login = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
 
-  const login = () => {
     if (id && password) {
       localStorage.setItem('token', 'abcdefg');
       localStorage.setItem('id', id);
@@ -32,28 +28,18 @@ const Signup: React.FC = () => {
 
   return (
     <>
-      <LoginWrap>
+      <CommonForm onSubmit={login}>
         <h1>회원가입</h1>
-        <LoginInput
-          type='text'
-          id='id'
-          value={id}
-          onChange={_onChange}
-          onKeyDown={_onKeyDownEnter}
-          placeholder={'아이디를 입력하세요'}
-        />
-        <LoginInput
-          type='password'
-          id='password'
+        <CommonInput type="text" id="id" value={id} onChange={_onChange} placeholder={'아이디를 입력하세요'} />
+        <CommonInput
+          type="password"
+          id="password"
           value={password}
           onChange={_onChange}
-          onKeyDown={_onKeyDownEnter}
           placeholder={'비밀번호를 입력하세요'}
         />
-        <LoginButton type='button' onClick={login}>
-          로그인
-        </LoginButton>
-      </LoginWrap>
+        <CommonButton type="submit">로그인</CommonButton>
+      </CommonForm>
     </>
   );
 };

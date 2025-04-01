@@ -5,14 +5,9 @@ const Board: React.FC = () => {
   const [productList, setProductList] = useState<any[]>([]);
 
   useEffect(() => {
-    api
-      .get('/product/list')
-      .then(function (res) {
-        setProductList(res.data);
-      })
-      .catch(function (err) {
-        console.error(err);
-      });
+    api.get('/product/list').then(function (res) {
+      setProductList(res.data);
+    });
   }, []);
 
   return (

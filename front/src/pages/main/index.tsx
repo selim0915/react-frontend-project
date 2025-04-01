@@ -5,7 +5,7 @@ const Main: React.FC = () => {
   return (
     <>
       <h1>Main</h1>
-      <img src={netflix} alt='img' width={100} height={50} />
+      <img src={netflix} alt="img" width={100} height={50} />
     </>
   );
 };

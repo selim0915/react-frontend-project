@@ -1,20 +1,12 @@
 import React from 'react';
-import { StyledHeader, StyledHeaderItem, StyledHeaderItemWrap, StyledHeaderLogo } from '../styles/layout.style';
-import { sampeople } from '../utils/image.import';
+import { StyledA, StyledDiv, StyledHeader, StyledHeaderItemWrap, StyledHeaderLogo } from '../styles/layout.style';
+import { WordKey } from '../utils/constants';
 
 interface HeaderProp {
   isLoggedIn: boolean;
 }
 
 const Header: React.FC<HeaderProp> = ({ isLoggedIn }) => {
-  const logo = () => {
-    window.location.href = '/';
-  };
-
-  const login = () => {
-    window.location.href = '/login';
-  };
-
   const logout = () => {
     localStorage.clear();
     window.location.href = '/login';
@@ -22,20 +14,14 @@ const Header: React.FC<HeaderProp> = ({ isLoggedIn }) => {
 
   return (
     <StyledHeader>
-      <StyledHeaderLogo src={sampeople} alt='logo' onClick={logo} />
+      <StyledHeaderLogo href="/login">{WordKey.PROJECT_NAME}</StyledHeaderLogo>
       <StyledHeaderItemWrap>
         {isLoggedIn ? (
           <>
-            <StyledHeaderItem>{localStorage.getItem('id')}님</StyledHeaderItem>
-            <StyledHeaderItem className='event' onClick={logout}>
-              로그아웃
-            </StyledHeaderItem>
+            <StyledDiv>{localStorage.getItem('id')}님</StyledDiv>
+            <StyledA onClick={logout}>로그아웃</StyledA>
           </>
-        ) : (
-          <StyledHeaderItem className='event' onClick={login}>
-            로그인
-          </StyledHeaderItem>
-        )}
+        ) : null}
       </StyledHeaderItemWrap>
     </StyledHeader>
   );

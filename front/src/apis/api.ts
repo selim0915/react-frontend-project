@@ -1,9 +1,6 @@
 import axios, { AxiosInstance } from 'axios';
 
-const api: AxiosInstance = axios.create({
-  baseURL: 'http://localhost:' + process.env.APP_PORT,
-  timeout: 1000 * 60 * 1 // 1분
-});
+const api: AxiosInstance = axios.create();
 
 api.interceptors.request.use(
   (config) => {
@@ -15,7 +12,7 @@ api.interceptors.request.use(
   },
   (error) => {
     return Promise.reject(error);
-  }
+  },
 );
 
 api.interceptors.response.use(
@@ -24,7 +21,7 @@ api.interceptors.response.use(
   },
   (error) => {
     return Promise.reject(error);
-  }
+  },
 );
 
 export default api;

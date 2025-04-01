@@ -12,22 +12,22 @@ export const StyledHeader = styled.header`
   align-content: center;
   align-items: center;
   flex-wrap: wrap;
-  border-bottom: 1px solid lightgray;
+  border-bottom: 1px solid ${Theme.borderColor};
 `;
-export const StyledHeaderLogo = styled.img`
-  width: 150px;
-  height: 20px;
-  cursor: pointer;
+export const StyledHeaderLogo = styled.a`
+  font-size: 18px;
+  font-weight: bold;
+  color: ${Theme.mainColor};
 `;
 export const StyledHeaderItemWrap = styled.div`
   display: flex;
   gap: 20px;
 `;
-export const StyledHeaderItem = styled.span`
-  &.event:hover {
-    text-decoration: underline;
-    cursor: pointer;
-  }
+export const StyledA = styled.a`
+  font-size: 12px;
+`;
+export const StyledDiv = styled.div`
+  font-size: 12px;
 `;
 
 // Nav
@@ -40,7 +40,7 @@ export const StyledNav = styled.nav`
   align-items: center;
   flex-wrap: wrap;
   align-content: center;
-  background-color: ${Theme.mainColor};
+  border-bottom: 1px solid ${Theme.borderColor};
 `;
 export const StyledNavItemWrap = styled.ul`
   margin: 0;
@@ -56,7 +56,7 @@ export const StyledNavItem = styled.li`
 `;
 export const StyledNavItemIink = styled.a`
   font-size: 14px;
-  color: white;
+  color: ${Theme.mainColor};
   text-decoration: none;
   &:hover {
     font-weight: bold;
@@ -88,7 +88,7 @@ export const StyledContent = styled.section`
 export const StyledFooter = styled.footer`
   width: auto;
   height: ${Theme.footerHeight};
-  border-top: 1px solid lightgray;
+  border-top: 1px solid ${Theme.borderColor};
   box-sizing: border-box;
   font-size: 12px;
   color: gray;

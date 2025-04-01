@@ -3,9 +3,10 @@ const path = require('path');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const { WEBPACK_PORT, PROJECT_NAME } = require('./server/properties');
 
 const mode = process.env.NODE_ENV;
-
+console.log('webpack mode ', mode)
 module.exports = {
   mode,
   entry: path.resolve(__dirname, './front/src/index.tsx'),
@@ -17,7 +18,7 @@ module.exports = {
   },
   devtool: 'source-map',
   devServer: {
-    port: process.env.WEBPACK_PORT || 3002,
+    port: WEBPACK_PORT,
     static: {
       publicPath: '/',
     },
@@ -66,7 +67,7 @@ module.exports = {
       template: path.resolve(__dirname, './front/public', 'index.html'),
       favicon: path.resolve(__dirname, './front/public', 'favicon.ico'),
       templateParameters: {
-        title: mode === 'development' ? 'DEV SAMPEOPLE' : 'SAMPEOPLE',
+        title: mode === 'development' ? `DEV ${PROJECT_NAME}` : PROJECT_NAME,
       },
       minify:
         mode === 'production'

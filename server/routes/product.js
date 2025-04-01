@@ -7,7 +7,7 @@ function initialize(app) {
   app.put('/product/:productId', productController.updateProduct);
   app.delete('/product/:productId', productController.deleteProduct);
 
-  app.use((error, req, res, next) => {
+  app.use((error, _req, res, _next) => {
     res.status(500).json({ message: error.message });
   });
 }
