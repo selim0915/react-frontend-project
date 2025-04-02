@@ -5,13 +5,16 @@ const express = require('express');
 const http = require('http');
 const cors = require('cors');
 const { exec } = require('child_process');
+const iconv = require('iconv-lite');
 const WebSocket = require('ws');
 // const db = require('./db');
 const { NODE_PORT, WSS_PORT } = require('./properties');
+const logger = require('./config/winton');
+const morgan = require('morgan');
 
 const app = express();
 const server = http.createServer(app);
-const wss = new WebSocket.Server({ port: WSS_PORT });
+const socket = new WebSocket.Server({ port: WSS_PORT });
 
 const ROOT = path.resolve(__dirname, '../dist');
 const IS_PROD = process.env.NODE_ENV === 'production';
@@ -19,33 +22,43 @@ const IS_PROD = process.env.NODE_ENV === 'production';
 // cors
 app.use(cors());
 
+// logger
+app.use(
+  morgan('combined', {
+    stream: {
+      write: (message) => logger.info(message.trim()),
+    },
+  }),
+);
+
 // webSocket
-wss.on('connection', (ws) => {
-  console.log('클라이언트 연결됨');
+socket.on('connection', (ws) => {
+  console.log('socket connection');
 
   ws.on('message', (message) => {
-    if (Buffer.isBuffer(message)) {
-      message = message.toString();
-    }
-    console.log('Received message:', message);
+    if (message && Buffer.isBuffer(message)) {
+      const command = message.toString();
 
-    exec(message, (err, stdout, stderr) => {
-      if (err) {
-        ws.send(`에러: ${stderr}`);
-      } else {
-        ws.send(stdout);
-      }
-    });
+      exec(command, { shell: 'cmd.exe', encoding: 'buffer' }, (err, stdout, stderr) => {
+        if (err) {
+          const result = iconv.decode(stderr, 'euc-kr');
+          ws.send(`Error : ${result}`);
+          return;
+        } else {
+          ws.send(iconv.decode(stdout, 'euc-kr'));
+        }
+      });
+    }
+  });
+  ws.on('close', (code, reason) => {
+    console.log('socket close' + code + ':' + reason);
+  });
+  ws.on('error', (err) => {
+    logger.error(`Error webSocket : ${err}`);
   });
 });
 
 // webpack
-app.use(express.static(ROOT));
-
-// route
-const routes = require('./routes/product');
-routes.initialize(app);
-
 if (IS_PROD) {
   app.get('*', (_req, res, _next) => {
     res.sendFile(path.join(ROOT, 'index.html'), (err) => {
@@ -80,6 +93,11 @@ if (IS_PROD) {
 }
 
 app.use(express.json());
+app.use(express.static(ROOT));
+
+// route
+const routes = require('./routes/product');
+routes.initialize(app);
 
 server.listen(NODE_PORT, () => {
   console.log(`Listening on ${NODE_PORT}`);
