@@ -8,6 +8,8 @@ const { exec } = require('child_process');
 const WebSocket = require('ws');
 // const db = require('./db');
 const { NODE_PORT, WSS_PORT } = require('./properties');
+const logger = require('./config/winton');
+const morgan = require('morgan');
 
 const app = express();
 const server = http.createServer(app);
@@ -18,6 +20,15 @@ const IS_PROD = process.env.NODE_ENV === 'production';
 
 // cors
 app.use(cors());
+
+// logger
+app.use(
+  morgan('combined', {
+    stream: {
+      write: (message) => logger.info(message.trim()),
+    },
+  }),
+);
 
 // webSocket
 wss.on('connection', (ws) => {
@@ -39,13 +50,14 @@ wss.on('connection', (ws) => {
   });
 });
 
-// webpack
+app.use(express.json());
 app.use(express.static(ROOT));
 
 // route
 const routes = require('./routes/product');
 routes.initialize(app);
 
+// webpack
 if (IS_PROD) {
   app.get('*', (_req, res, _next) => {
     res.sendFile(path.join(ROOT, 'index.html'), (err) => {
@@ -78,8 +90,6 @@ if (IS_PROD) {
     });
   });
 }
-
-app.use(express.json());
 
 server.listen(NODE_PORT, () => {
   console.log(`Listening on ${NODE_PORT}`);
