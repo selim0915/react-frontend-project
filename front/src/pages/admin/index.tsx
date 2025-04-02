@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 
+const MAX_LENGTH = 10000;
+
 const Admin: React.FC = () => {
   const [input, setInput] = useState('');
-  const [output, setOutput] = useState('');
+  const [output, setOutput] = useState<string[]>([]);
   const [socket, setSocket] = useState<WebSocket | null>(null);
 
   useEffect(() => {
@@ -15,6 +17,7 @@ const Admin: React.FC = () => {
     if (socket && input) {
       socket.send(input);
       setInput('');
+      setOutput((prev) => [...prev, `$ ${input}`]);
     }
   };
 
@@ -22,7 +25,7 @@ const Admin: React.FC = () => {
     if (!socket) {
       const ws = new WebSocket('ws://localhost:3001');
       ws.onopen = () => console.log('WebSocket Connected');
-      ws.onmessage = (event) => setOutput(event.data);
+      ws.onmessage = handleWebSocketMessage;
       ws.onclose = () => console.log('WebSocket Disconnected');
       ws.onerror = (error) => console.error('WebSocket Error:', error);
 
@@ -37,12 +40,29 @@ const Admin: React.FC = () => {
     }
   };
 
+  const handleWebSocketMessage = (event: MessageEvent) => {
+    setOutput((prev) => {
+      const newOutput = [...prev, event.data];
+
+      let totalLength = newOutput.reduce((sum, line) => sum + line.length, 0);
+
+      while (totalLength > MAX_LENGTH && newOutput.length > 0) {
+        totalLength -= newOutput[0].length;
+        newOutput.shift();
+      }
+
+      return newOutput;
+    });
+  };
+
   return (
     <div>
       <h3>웹소켓 연결 : {socket ? '연결됨' : '끊김'}</h3>
 
       <div style={{ width: '50%', height: 200, border: `1px solid #000`, whiteSpace: 'pre-wrap', overflow: 'auto' }}>
-        {output}
+        {output.map((line, index) => (
+          <div key={index}>{line}</div>
+        ))}
       </div>
       <form style={{ display: 'flex', gap: 10, padding: '20px 0px' }} onSubmit={handleSubmit}>
         <input type="text" value={input} onChange={(e) => setInput(e.target.value)} placeholder="node cli..." />
