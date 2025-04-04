@@ -2,19 +2,13 @@ require('dotenv').config();
 
 const path = require('path');
 const express = require('express');
-const http = require('http');
 const cors = require('cors');
-const { exec } = require('child_process');
-const iconv = require('iconv-lite');
-const WebSocket = require('ws');
-// const db = require('./db');
-const { NODE_PORT, WSS_PORT } = require('./properties');
-const logger = require('./config/winton');
-const morgan = require('morgan');
+// const db = require('./config/db');
+const { NODE_PORT } = require('./properties');
+const logger = require('./config/winston');
+const setupWebSocket = require('./config/websocket');
 
 const app = express();
-const server = http.createServer(app);
-const socket = new WebSocket.Server({ port: WSS_PORT });
 
 const ROOT = path.resolve(__dirname, '../dist');
 const IS_PROD = process.env.NODE_ENV === 'production';
@@ -23,40 +17,7 @@ const IS_PROD = process.env.NODE_ENV === 'production';
 app.use(cors());
 
 // logger
-app.use(
-  morgan('combined', {
-    stream: {
-      write: (message) => logger.info(message.trim()),
-    },
-  }),
-);
-
-// webSocket
-socket.on('connection', (ws) => {
-  console.log('socket connection');
-
-  ws.on('message', (message) => {
-    if (message && Buffer.isBuffer(message)) {
-      const command = message.toString();
-
-      exec(command, { shell: 'cmd.exe', encoding: 'buffer' }, (err, stdout, stderr) => {
-        if (err) {
-          const result = iconv.decode(stderr, 'euc-kr');
-          ws.send(`Error : ${result}`);
-          return;
-        } else {
-          ws.send(iconv.decode(stdout, 'euc-kr'));
-        }
-      });
-    }
-  });
-  ws.on('close', (code, reason) => {
-    console.log('socket close' + code + ':' + reason);
-  });
-  ws.on('error', (err) => {
-    logger.error(`Error webSocket : ${err}`);
-  });
-});
+app.use(logger.morganMiddleware);
 
 // webpack
 if (IS_PROD) {
@@ -99,6 +60,9 @@ app.use(express.static(ROOT));
 const routes = require('./routes/product');
 routes.initialize(app);
 
-server.listen(NODE_PORT, () => {
+// webSocket
+setupWebSocket();
+
+app.listen(NODE_PORT, () => {
   console.log(`Listening on ${NODE_PORT}`);
 });

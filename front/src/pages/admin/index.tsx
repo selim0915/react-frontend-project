@@ -1,44 +1,86 @@
 import React, { useEffect, useRef, useState } from 'react';
+import api from '../../apis/api';
 
-const MAX_LENGTH = 10000;
+const MAX_LENGTH = 100000;
 
 const Admin: React.FC = () => {
   const outputRef = useRef<HTMLDivElement>(null);
+  const initialState = {
+    keyword: '',
+    highlight: false,
+    filter: false,
+  };
+  const [searchData, setSearchData] = useState(initialState);
   const [input, setInput] = useState('');
   const [output, setOutput] = useState<string[]>([]);
+  const [customData, setCustomData] = useState<string[]>([]);
   const [socket, setSocket] = useState<WebSocket | null>(null);
+
+  useEffect(() => {
+    if (outputRef.current) {
+      outputRef.current.scrollTop = outputRef.current.scrollHeight;
+    }
+  }, [output]);
 
   useEffect(() => {
     return () => socket?.close();
   }, [socket]);
 
+  const handleLogRequest = async () => {
+    await api.get('/api/test');
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { id, value } = e.target;
+
+    setSearchData((prevData) => ({
+      ...prevData,
+      [id]: value,
+    }));
+  };
+
+  const handleApplySearch = (data: string[]) => {
+    // TODO : 터미널 결과값을 못 받고 옴
+    const { keyword, filter, highlight } = searchData;
+
+    const word = keyword.trim();
+    if (!word) return;
+
+    if (filter) {
+      const result = data.filter((line) => line.toLowerCase().includes(word.toLowerCase()));
+      setCustomData(result);
+      return;
+    }
+    if (highlight) {
+      const result = data.map((v) => {
+        return v.replace(new RegExp(word, 'gi'), `<b>${word}</b>`);
+      });
+      setCustomData(result);
+      return;
+    }
+  };
+
+  const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    handleApplySearch(output);
+  };
+
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (socket && input) {
-      socket.send(input);
-      setInput('');
-      setOutput((prev) => [...prev, `$ ${input}`]);
-    }
-  };
-
-  const handleConnectWebSocket = () => {
     if (!socket) {
-      const ws = new WebSocket('ws://localhost:3001');
-      ws.onopen = () => console.log('WebSocket Connected');
-      ws.onmessage = handleWebSocketMessage;
-      ws.onclose = () => console.log('WebSocket Disconnected');
-      ws.onerror = (error) => console.error('WebSocket Error:', error);
-
-      setSocket(ws);
+      handleCloseWebSocket();
+      return;
     }
-  };
 
-  const handleCloseWebSocket = () => {
-    if (socket) {
-      socket.close();
-      setSocket(null);
+    if (!input) {
+      setCustomData((prev) => [...prev, '$\n']);
+      return;
     }
+
+    socket.send(input);
+    setInput('');
   };
 
   const handleWebSocketMessage = (event: MessageEvent) => {
@@ -52,67 +94,124 @@ const Admin: React.FC = () => {
         newOutput.shift();
       }
 
+      handleApplySearch(newOutput);
       return newOutput;
     });
   };
 
-  useEffect(() => {
-    if (outputRef.current) {
-      outputRef.current.scrollTop = outputRef.current.scrollHeight;
+  const handleCloseWebSocket = () => {
+    if (socket) {
+      socket.close();
+      setSocket(null);
     }
-  }, [output]);
+    setCustomData((prev) => [...prev, 'Close WebSocket']);
+  };
+
+  const handleConnectWebSocket = () => {
+    if (!socket) {
+      const ws = new WebSocket('ws://localhost:3001');
+      ws.onopen = () => {
+        setCustomData((prev) => [...prev, 'Connection WebSocket']);
+      };
+      ws.onmessage = handleWebSocketMessage;
+      ws.onclose = handleCloseWebSocket;
+      ws.onerror = (error) => console.error('WebSocket Error:', error);
+
+      setSocket(ws);
+    }
+  };
+
+  const handleToggleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.checked) {
+      handleConnectWebSocket();
+    } else {
+      handleCloseWebSocket();
+    }
+  };
 
   return (
     <div>
-      <h3>웹소켓 연결 : {socket ? '연결됨' : '끊김'}</h3>
+      <label>
+        웹소켓 <b>{socket ? 'On' : 'Off'}</b>
+        <input type="checkbox" checked={!!socket} onChange={handleToggleChange} />
+      </label>
+
+      <form onSubmit={handleSearch}>
+        <input type="text" id="keyword" value={searchData.keyword} onChange={handleChange} />
+        <label>
+          강조
+          <input type="checkbox" id="highlight" value="highlight" onChange={handleChange} />
+        </label>
+        <label>
+          필터링
+          <input type="checkbox" id="filter" value="filter" onChange={handleChange} />
+        </label>
+        <button type="submit">검색</button>
+      </form>
 
       <div
         ref={outputRef}
         style={{
           width: '50%',
-          height: 300,
-          color: '#fff',
-          backgroundColor: '#000',
+          height: 500,
+          // color: '#fff',
+          // backgroundColor: '#000',
           border: `1px solid #000`,
           whiteSpace: 'pre-wrap',
           overflow: 'auto',
           resize: 'both',
         }}
       >
-        {output.map((line, index) => (
-          <div key={index}>{line}</div>
+        {customData.map((line, index) => (
+          <div key={index} dangerouslySetInnerHTML={{ __html: line }} />
         ))}
+
+        <form style={{ display: 'flex', gap: 3 }} onSubmit={handleSubmit}>
+          $
+          <input
+            type="text"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder="node cli..."
+            list="searchOptions"
+            style={{ width: '100%', imeMode: 'disabled' }}
+          />
+          <datalist id="searchOptions">
+            <option>cd</option>
+            <option>dir</option>
+          </datalist>
+          <button type="submit" style={{ display: 'none' }} />
+          <button type="button" onClick={handleLogRequest} style={{ width: 100 }}>
+            Add logs
+          </button>
+        </form>
       </div>
-      <form style={{ display: 'flex', gap: 10, padding: '20px 0px' }} onSubmit={handleSubmit}>
-        <input
-          type="text"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder="node cli..."
-          list="searchOptions"
-          style={{ imeMode: 'disabled' }}
-        />
-        <datalist id="searchOptions">
-          <option>cd</option>
-          <option>dir</option>
-          <option>type</option>
-        </datalist>
 
-        <button type="submit" disabled={!socket}>
-          Send
-        </button>
-        <button type="button" onClick={handleConnectWebSocket} disabled={!!socket}>
-          웹소켓 연결
-        </button>
-        <button type="button" onClick={handleCloseWebSocket} disabled={!socket}>
-          웹소켓 끊기
-        </button>
-      </form>
-
-      <code>
-        <div>cd logs</div>
-        <div>type 2025-04-03.log</div>
-      </code>
+      <table border={1} cellSpacing={0}>
+        <thead>
+          <tr>
+            <th>Windows</th>
+            <th>Git Bash</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>cd</td>
+            <td>pwd</td>
+          </tr>
+          <tr>
+            <td colSpan={2}>cd logs</td>
+          </tr>
+          <tr>
+            <td>dir</td>
+            <td>dir, ls</td>
+          </tr>
+          <tr>
+            <td>type 2025-04-03.log</td>
+            <td>tail -f 2025-04-04.log</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   );
 };
