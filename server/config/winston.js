@@ -1,5 +1,6 @@
 const winston = require('winston');
 const winstonDaily = require('winston-daily-rotate-file');
+const morgan = require('morgan');
 const process = require('process');
 const path = require('path');
 const { combine, timestamp, printf, colorize } = winston.format;
@@ -37,6 +38,12 @@ const transports = [
 const logger = winston.createLogger({
   format: logFormat,
   transports,
+});
+
+logger.morganMiddleware = morgan('combined', {
+  stream: {
+    write: (message) => logger.info(message.trim()),
+  },
 });
 
 if (process.env.NODE_ENV !== 'production') {

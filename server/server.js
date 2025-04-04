@@ -3,10 +3,9 @@ require('dotenv').config();
 const path = require('path');
 const express = require('express');
 const cors = require('cors');
-const morgan = require('morgan');
 // const db = require('./config/db');
 const { NODE_PORT } = require('./properties');
-const logger = require('./config/winton');
+const logger = require('./config/winston');
 const setupWebSocket = require('./config/websocket');
 
 const app = express();
@@ -18,13 +17,7 @@ const IS_PROD = process.env.NODE_ENV === 'production';
 app.use(cors());
 
 // logger
-app.use(
-  morgan('combined', {
-    stream: {
-      write: (message) => logger.info(message.trim()),
-    },
-  }),
-);
+app.use(logger.morganMiddleware);
 
 // webpack
 if (IS_PROD) {
