@@ -5,8 +5,15 @@ const MAX_LENGTH = 100000;
 
 const Admin: React.FC = () => {
   const outputRef = useRef<HTMLDivElement>(null);
+  const initialState = {
+    keyword: '',
+    highlight: false,
+    filter: false,
+  };
+  const [searchData, setSearchData] = useState(initialState);
   const [input, setInput] = useState('');
   const [output, setOutput] = useState<string[]>([]);
+  const [customData, setCustomData] = useState<string[]>([]);
   const [socket, setSocket] = useState<WebSocket | null>(null);
 
   useEffect(() => {
@@ -22,6 +29,43 @@ const Admin: React.FC = () => {
   const handleLogRequest = async () => {
     await api.get('/api/test');
   };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { id, value } = e.target;
+
+    setSearchData((prevData) => ({
+      ...prevData,
+      [id]: value,
+    }));
+  };
+
+  const handleApplySearch = (data: string[]) => {
+    // TODO : 터미널 결과값을 못 받고 옴
+    const { keyword, filter, highlight } = searchData;
+
+    const word = keyword.trim();
+    if (!word) return;
+
+    if (filter) {
+      const result = data.filter((line) => line.toLowerCase().includes(word.toLowerCase()));
+      setCustomData(result);
+      return;
+    }
+    if (highlight) {
+      const result = data.map((v) => {
+        return v.replace(new RegExp(word, 'gi'), `<b>${word}</b>`);
+      });
+      setCustomData(result);
+      return;
+    }
+  };
+
+  const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    handleApplySearch(output);
+  };
+
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -31,7 +75,7 @@ const Admin: React.FC = () => {
     }
 
     if (!input) {
-      setOutput((prev) => [...prev, '$\n']);
+      setCustomData((prev) => [...prev, '$\n']);
       return;
     }
 
@@ -50,6 +94,7 @@ const Admin: React.FC = () => {
         newOutput.shift();
       }
 
+      handleApplySearch(newOutput);
       return newOutput;
     });
   };
@@ -59,14 +104,14 @@ const Admin: React.FC = () => {
       socket.close();
       setSocket(null);
     }
-    setOutput((prev) => [...prev, 'Close WebSocket']);
+    setCustomData((prev) => [...prev, 'Close WebSocket']);
   };
 
   const handleConnectWebSocket = () => {
     if (!socket) {
       const ws = new WebSocket('ws://localhost:3001');
       ws.onopen = () => {
-        setOutput((prev) => [...prev, 'Connection WebSocket']);
+        setCustomData((prev) => [...prev, 'Connection WebSocket']);
       };
       ws.onmessage = handleWebSocketMessage;
       ws.onclose = handleCloseWebSocket;
@@ -91,6 +136,19 @@ const Admin: React.FC = () => {
         <input type="checkbox" checked={!!socket} onChange={handleToggleChange} />
       </label>
 
+      <form onSubmit={handleSearch}>
+        <input type="text" id="keyword" value={searchData.keyword} onChange={handleChange} />
+        <label>
+          강조
+          <input type="checkbox" id="highlight" value="highlight" onChange={handleChange} />
+        </label>
+        <label>
+          필터링
+          <input type="checkbox" id="filter" value="filter" onChange={handleChange} />
+        </label>
+        <button type="submit">검색</button>
+      </form>
+
       <div
         ref={outputRef}
         style={{
@@ -104,8 +162,8 @@ const Admin: React.FC = () => {
           resize: 'both',
         }}
       >
-        {output.map((line, index) => (
-          <div key={index}>{line}</div>
+        {customData.map((line, index) => (
+          <div key={index} dangerouslySetInnerHTML={{ __html: line }} />
         ))}
 
         <form style={{ display: 'flex', gap: 3 }} onSubmit={handleSubmit}>
