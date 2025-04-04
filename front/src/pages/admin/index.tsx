@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 
-const MAX_LENGTH = 10000;
+const MAX_LENGTH = 100000;
 
 const Admin: React.FC = () => {
   const outputRef = useRef<HTMLDivElement>(null);
@@ -18,26 +18,6 @@ const Admin: React.FC = () => {
     if (socket && input) {
       socket.send(input);
       setInput('');
-      setOutput((prev) => [...prev, `$ ${input}`]);
-    }
-  };
-
-  const handleConnectWebSocket = () => {
-    if (!socket) {
-      const ws = new WebSocket('ws://localhost:3001');
-      ws.onopen = () => console.log('WebSocket Connected');
-      ws.onmessage = handleWebSocketMessage;
-      ws.onclose = () => console.log('WebSocket Disconnected');
-      ws.onerror = (error) => console.error('WebSocket Error:', error);
-
-      setSocket(ws);
-    }
-  };
-
-  const handleCloseWebSocket = () => {
-    if (socket) {
-      socket.close();
-      setSocket(null);
     }
   };
 
@@ -56,6 +36,28 @@ const Admin: React.FC = () => {
     });
   };
 
+  const handleCloseWebSocket = () => {
+    if (socket) {
+      socket.close();
+      setSocket(null);
+      setOutput((prev) => [...prev, 'Close WebSocket']);
+    }
+  };
+
+  const handleConnectWebSocket = () => {
+    if (!socket) {
+      const ws = new WebSocket('ws://localhost:3001');
+      ws.onopen = () => {
+        setOutput((prev) => [...prev, 'Connection WebSocket']);
+      };
+      ws.onmessage = handleWebSocketMessage;
+      ws.onclose = handleCloseWebSocket;
+      ws.onerror = (error) => console.error('WebSocket Error:', error);
+
+      setSocket(ws);
+    }
+  };
+
   useEffect(() => {
     if (outputRef.current) {
       outputRef.current.scrollTop = outputRef.current.scrollHeight;
@@ -71,8 +73,8 @@ const Admin: React.FC = () => {
         style={{
           width: '50%',
           height: 300,
-          color: '#fff',
-          backgroundColor: '#000',
+          // color: '#fff',
+          // backgroundColor: '#000',
           border: `1px solid #000`,
           whiteSpace: 'pre-wrap',
           overflow: 'auto',
@@ -90,7 +92,7 @@ const Admin: React.FC = () => {
           onChange={(e) => setInput(e.target.value)}
           placeholder="node cli..."
           list="searchOptions"
-          style={{ imeMode: 'disabled' }}
+          style={{ width: 300, imeMode: 'disabled' }}
         />
         <datalist id="searchOptions">
           <option>cd</option>
@@ -111,6 +113,7 @@ const Admin: React.FC = () => {
 
       <code>
         <div>cd logs</div>
+        <div>dir</div>
         <div>type 2025-04-03.log</div>
       </code>
     </div>
