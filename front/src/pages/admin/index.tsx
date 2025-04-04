@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import api from '../../apis/api';
 
 const MAX_LENGTH = 100000;
 
@@ -9,16 +10,33 @@ const Admin: React.FC = () => {
   const [socket, setSocket] = useState<WebSocket | null>(null);
 
   useEffect(() => {
+    if (outputRef.current) {
+      outputRef.current.scrollTop = outputRef.current.scrollHeight;
+    }
+  }, [output]);
+
+  useEffect(() => {
     return () => socket?.close();
   }, [socket]);
 
+  const handleLogRequest = async () => {
+    await api.get('/api/test');
+  };
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (socket && input) {
-      socket.send(input);
-      setInput('');
+    if (!socket) {
+      handleCloseWebSocket();
+      return;
     }
+
+    if (!input) {
+      setOutput((prev) => [...prev, '$\n']);
+      return;
+    }
+
+    socket.send(input);
+    setInput('');
   };
 
   const handleWebSocketMessage = (event: MessageEvent) => {
@@ -40,8 +58,8 @@ const Admin: React.FC = () => {
     if (socket) {
       socket.close();
       setSocket(null);
-      setOutput((prev) => [...prev, 'Close WebSocket']);
     }
+    setOutput((prev) => [...prev, 'Close WebSocket']);
   };
 
   const handleConnectWebSocket = () => {
@@ -58,21 +76,26 @@ const Admin: React.FC = () => {
     }
   };
 
-  useEffect(() => {
-    if (outputRef.current) {
-      outputRef.current.scrollTop = outputRef.current.scrollHeight;
+  const handleToggleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.checked) {
+      handleConnectWebSocket();
+    } else {
+      handleCloseWebSocket();
     }
-  }, [output]);
+  };
 
   return (
     <div>
-      <h3>웹소켓 연결 : {socket ? '연결됨' : '끊김'}</h3>
+      <label>
+        웹소켓 <b>{socket ? 'On' : 'Off'}</b>
+        <input type="checkbox" checked={!!socket} onChange={handleToggleChange} />
+      </label>
 
       <div
         ref={outputRef}
         style={{
           width: '50%',
-          height: 300,
+          height: 500,
           // color: '#fff',
           // backgroundColor: '#000',
           border: `1px solid #000`,
@@ -84,38 +107,53 @@ const Admin: React.FC = () => {
         {output.map((line, index) => (
           <div key={index}>{line}</div>
         ))}
+
+        <form style={{ display: 'flex', gap: 3 }} onSubmit={handleSubmit}>
+          $
+          <input
+            type="text"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder="node cli..."
+            list="searchOptions"
+            style={{ width: '100%', imeMode: 'disabled' }}
+          />
+          <datalist id="searchOptions">
+            <option>cd</option>
+            <option>dir</option>
+          </datalist>
+          <button type="submit" style={{ display: 'none' }} />
+          <button type="button" onClick={handleLogRequest} style={{ width: 100 }}>
+            Add logs
+          </button>
+        </form>
       </div>
-      <form style={{ display: 'flex', gap: 10, padding: '20px 0px' }} onSubmit={handleSubmit}>
-        <input
-          type="text"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder="node cli..."
-          list="searchOptions"
-          style={{ width: 300, imeMode: 'disabled' }}
-        />
-        <datalist id="searchOptions">
-          <option>cd</option>
-          <option>dir</option>
-          <option>type</option>
-        </datalist>
 
-        <button type="submit" disabled={!socket}>
-          Send
-        </button>
-        <button type="button" onClick={handleConnectWebSocket} disabled={!!socket}>
-          웹소켓 연결
-        </button>
-        <button type="button" onClick={handleCloseWebSocket} disabled={!socket}>
-          웹소켓 끊기
-        </button>
-      </form>
-
-      <code>
-        <div>cd logs</div>
-        <div>dir</div>
-        <div>type 2025-04-03.log</div>
-      </code>
+      <table border={1} cellSpacing={0}>
+        <thead>
+          <tr>
+            <th>Windows</th>
+            <th>Git Bash</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>cd</td>
+            <td>pwd</td>
+          </tr>
+          <tr>
+            <td colSpan={2}>cd logs</td>
+          </tr>
+          <tr>
+            <td>dir</td>
+            <td>dir, ls</td>
+          </tr>
+          <tr>
+            <td>type 2025-04-03.log</td>
+            <td>tail -f 2025-04-04.log</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   );
 };
