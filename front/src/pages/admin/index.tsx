@@ -1,69 +1,130 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import api from '../../apis/api';
 
 const MAX_LENGTH = 100000;
+
+const handleLogRequest = async () => {
+  await api.get('/api/test');
+};
 
 const Admin: React.FC = () => {
   const outputRef = useRef<HTMLDivElement>(null);
   const initialState = {
     keyword: '',
-    highlight: false,
     filter: false,
+    highlight: false,
   };
   const [searchData, setSearchData] = useState(initialState);
+  const { keyword, filter, highlight } = searchData;
   const [input, setInput] = useState('');
   const [output, setOutput] = useState<string[]>([]);
-  const [customData, setCustomData] = useState<string[]>([]);
+  const [styledOutput, setStyledOutput] = useState<string[]>([]);
   const [socket, setSocket] = useState<WebSocket | null>(null);
 
   useEffect(() => {
     if (outputRef.current) {
       outputRef.current.scrollTop = outputRef.current.scrollHeight;
     }
-  }, [output]);
+  }, [styledOutput]);
 
   useEffect(() => {
     return () => socket?.close();
   }, [socket]);
 
-  const handleLogRequest = async () => {
-    await api.get('/api/test');
+  const handleApplyStyledLine = useCallback(
+    (data: string) => {
+      const word = keyword.trim();
+
+      if (!word || (!filter && !highlight)) {
+        setStyledOutput((prev) => [...prev, data]);
+        return;
+      }
+
+      let result = data;
+      if (filter && !data.toLowerCase().includes(word.toLowerCase())) {
+        return;
+      }
+
+      if (highlight) {
+        const wordRegex = new RegExp(word, 'gi');
+        result = data.replace(wordRegex, (match) => `<mark>${match}</mark>`);
+      }
+      setStyledOutput((prev) => [...prev, result]);
+    },
+    [keyword, filter, highlight],
+  );
+
+  const handleApplyStyledOutput = useCallback(
+    (data: string[]) => {
+      const word = keyword.trim();
+
+      if (!word || (!filter && !highlight)) {
+        setStyledOutput([...data]);
+        return;
+      }
+
+      let result = [...data];
+      if (filter) {
+        result = result.filter((v) => {
+          return v.toLowerCase().includes(word.toLowerCase());
+        });
+      }
+
+      if (highlight) {
+        const wordRegex = new RegExp(word, 'gi');
+        result = result.map((v) => {
+          return v.replace(wordRegex, (match) => `<mark>${match}</mark>`);
+        });
+      }
+      setStyledOutput(result);
+    },
+    [keyword, filter, highlight],
+  );
+
+  const handleAppendOutput = (line: string) => {
+    setOutput((prev) => {
+      const newOutput = [...prev, line];
+      let totalLength = newOutput.reduce((sum, line) => sum + line.length, 0);
+
+      while (totalLength > MAX_LENGTH && newOutput.length > 0) {
+        totalLength -= newOutput[0].length;
+        newOutput.shift();
+      }
+
+      return newOutput;
+    });
+
+    handleApplyStyledLine(line);
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { id, value } = e.target;
-
-    setSearchData((prevData) => ({
-      ...prevData,
-      [id]: value,
-    }));
+  const handleWebSocketMessage = (event: MessageEvent) => {
+    handleAppendOutput(event.data);
   };
 
-  const handleApplySearch = (data: string[]) => {
-    // TODO : 터미널 결과값을 못 받고 옴
-    const { keyword, filter, highlight } = searchData;
-
-    const word = keyword.trim();
-    if (!word) return;
-
-    if (filter) {
-      const result = data.filter((line) => line.toLowerCase().includes(word.toLowerCase()));
-      setCustomData(result);
-      return;
+  const handleCloseWebSocket = () => {
+    if (socket) {
+      socket.close();
+      setSocket(null);
     }
-    if (highlight) {
-      const result = data.map((v) => {
-        return v.replace(new RegExp(word, 'gi'), `<b>${word}</b>`);
-      });
-      setCustomData(result);
-      return;
+    handleAppendOutput('Close WebSocket');
+  };
+
+  const handleConnectWebSocket = () => {
+    if (!socket) {
+      const ws = new WebSocket('ws://localhost:3001');
+      ws.onopen = () => handleAppendOutput('Connection WebSocket');
+      ws.onmessage = handleWebSocketMessage;
+      ws.onclose = handleCloseWebSocket;
+      ws.onerror = (error) => {
+        handleAppendOutput(`Error WebSocket: ${error}`);
+      };
+      setSocket(ws);
     }
   };
 
   const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
-    handleApplySearch(output);
+    handleApplyStyledOutput(output);
   };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -75,50 +136,12 @@ const Admin: React.FC = () => {
     }
 
     if (!input) {
-      setCustomData((prev) => [...prev, '$\n']);
+      handleAppendOutput('$\n');
       return;
     }
 
     socket.send(input);
     setInput('');
-  };
-
-  const handleWebSocketMessage = (event: MessageEvent) => {
-    setOutput((prev) => {
-      const newOutput = [...prev, event.data];
-
-      let totalLength = newOutput.reduce((sum, line) => sum + line.length, 0);
-
-      while (totalLength > MAX_LENGTH && newOutput.length > 0) {
-        totalLength -= newOutput[0].length;
-        newOutput.shift();
-      }
-
-      handleApplySearch(newOutput);
-      return newOutput;
-    });
-  };
-
-  const handleCloseWebSocket = () => {
-    if (socket) {
-      socket.close();
-      setSocket(null);
-    }
-    setCustomData((prev) => [...prev, 'Close WebSocket']);
-  };
-
-  const handleConnectWebSocket = () => {
-    if (!socket) {
-      const ws = new WebSocket('ws://localhost:3001');
-      ws.onopen = () => {
-        setCustomData((prev) => [...prev, 'Connection WebSocket']);
-      };
-      ws.onmessage = handleWebSocketMessage;
-      ws.onclose = handleCloseWebSocket;
-      ws.onerror = (error) => console.error('WebSocket Error:', error);
-
-      setSocket(ws);
-    }
   };
 
   const handleToggleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -129,22 +152,33 @@ const Admin: React.FC = () => {
     }
   };
 
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { id, value, checked, type } = e.target;
+
+    setSearchData((prevData) => ({
+      ...prevData,
+      [id]: type === 'checkbox' ? checked : value,
+    }));
+  };
+
   return (
     <div>
       <label>
         웹소켓 <b>{socket ? 'On' : 'Off'}</b>
         <input type="checkbox" checked={!!socket} onChange={handleToggleChange} />
       </label>
-
-      <form onSubmit={handleSearch}>
-        <input type="text" id="keyword" value={searchData.keyword} onChange={handleChange} />
+      <button type="button" onClick={handleLogRequest} style={{ width: 100 }}>
+        Add logs
+      </button>
+      <form onSubmit={handleSearch} style={{ padding: '10px 0px' }}>
+        <input type="text" id="keyword" value={keyword} onChange={handleChange} />
         <label>
           강조
-          <input type="checkbox" id="highlight" value="highlight" onChange={handleChange} />
+          <input type="checkbox" id="highlight" checked={highlight} onChange={handleChange} />
         </label>
         <label>
           필터링
-          <input type="checkbox" id="filter" value="filter" onChange={handleChange} />
+          <input type="checkbox" id="filter" checked={filter} onChange={handleChange} />
         </label>
         <button type="submit">검색</button>
       </form>
@@ -162,7 +196,7 @@ const Admin: React.FC = () => {
           resize: 'both',
         }}
       >
-        {customData.map((line, index) => (
+        {styledOutput.map((line, index) => (
           <div key={index} dangerouslySetInnerHTML={{ __html: line }} />
         ))}
 
@@ -181,9 +215,6 @@ const Admin: React.FC = () => {
             <option>dir</option>
           </datalist>
           <button type="submit" style={{ display: 'none' }} />
-          <button type="button" onClick={handleLogRequest} style={{ width: 100 }}>
-            Add logs
-          </button>
         </form>
       </div>
 
