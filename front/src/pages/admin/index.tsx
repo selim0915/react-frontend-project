@@ -1,5 +1,18 @@
 import React, { useEffect, useRef, useState } from 'react';
 import api from '../../apis/api';
+import {
+  H3,
+  Mark,
+  Searchbutton,
+  SearchForm,
+  SearchInput,
+  SearchLabel,
+  Shell,
+  ShellForm,
+  ShellInput,
+  ShellLine,
+} from './admin.style';
+import AdminHelp from './adminHelp';
 
 const MAX_LENGTH = 100000;
 
@@ -53,7 +66,7 @@ const Admin: React.FC = () => {
       const regex = new RegExp(`(${word})`, 'gi');
       const parts = data.split(regex);
       const line = parts.map((part, idx) =>
-        part.toLowerCase() === word.toLowerCase() ? <mark key={idx}>{part}</mark> : part,
+        part.toLowerCase() === word.toLowerCase() ? <Mark key={idx}>{part}</Mark> : part,
       );
       setStyledOutput((prev) => [...prev, line]);
       return;
@@ -83,7 +96,7 @@ const Admin: React.FC = () => {
         const parts = v.split(regex);
 
         return parts.map((part, idx) =>
-          part.toLowerCase() === word.toLowerCase() ? <mark key={idx}>{part}</mark> : part,
+          part.toLowerCase() === word.toLowerCase() ? <Mark key={idx}>{part}</Mark> : part,
         );
       });
 
@@ -174,88 +187,39 @@ const Admin: React.FC = () => {
   };
 
   return (
-    <div>
-      <label>
+    <>
+      <H3>
         웹소켓 <b>{socket ? 'On' : 'Off'}</b>
-        <input type="checkbox" checked={!!socket} onChange={handleToggleChange} />
-      </label>
-      <button type="button" onClick={handleLogRequest} style={{ width: 100 }}>
-        Add logs
-      </button>
-      <form onSubmit={handleSearch} style={{ padding: '10px 0px' }}>
-        <input type="text" id="keyword" value={keyword} onChange={handleChange} />
-        <label>
+        <SearchInput type="checkbox" checked={!!socket} onChange={handleToggleChange} />
+      </H3>
+
+      <SearchForm onSubmit={handleSearch}>
+        <SearchInput type="text" id="keyword" value={keyword} onChange={handleChange} />
+        <SearchLabel>
           강조
-          <input type="checkbox" id="highlight" checked={highlight} onChange={handleChange} />
-        </label>
-        <label>
+          <SearchInput type="checkbox" id="highlight" checked={highlight} onChange={handleChange} />
+        </SearchLabel>
+        <SearchLabel>
           필터링
-          <input type="checkbox" id="filter" checked={filter} onChange={handleChange} />
-        </label>
-        <button type="submit">검색</button>
-      </form>
+          <SearchInput type="checkbox" id="filter" checked={filter} onChange={handleChange} />
+        </SearchLabel>
+        <Searchbutton type="submit">검색</Searchbutton>
+        <Searchbutton type="button" onClick={handleLogRequest} style={{ width: 100 }}>
+          Add logs
+        </Searchbutton>
+      </SearchForm>
 
-      <div
-        ref={outputRef}
-        style={{
-          width: '50%',
-          height: 500,
-          // color: '#fff',
-          // backgroundColor: '#000',
-          border: `1px solid #000`,
-          whiteSpace: 'pre-wrap',
-          overflow: 'auto',
-          resize: 'both',
-        }}
-      >
+      <Shell ref={outputRef}>
         {styledOutput.map((line, index) => (
-          <div key={index}>{line}</div>
+          <ShellLine key={index}>{line}</ShellLine>
         ))}
+        <ShellForm onSubmit={handleSubmit}>
+          $<ShellInput type="text" value={input} onChange={(e) => setInput(e.target.value)} placeholder="node cli..." />
+        </ShellForm>
+      </Shell>
 
-        <form style={{ display: 'flex', gap: 3 }} onSubmit={handleSubmit}>
-          $
-          <input
-            type="text"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder="node cli..."
-            list="searchOptions"
-            style={{ width: '100%', imeMode: 'disabled' }}
-          />
-          <datalist id="searchOptions">
-            <option>cd</option>
-            <option>dir</option>
-          </datalist>
-          <button type="submit" style={{ display: 'none' }} />
-        </form>
-      </div>
-
-      <table border={1} cellSpacing={0}>
-        <thead>
-          <tr>
-            <th>Windows</th>
-            <th>Git Bash</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>cd</td>
-            <td>pwd</td>
-          </tr>
-          <tr>
-            <td colSpan={2}>cd logs</td>
-          </tr>
-          <tr>
-            <td>dir</td>
-            <td>dir, ls</td>
-          </tr>
-          <tr>
-            <td>type 2025-04-03.log</td>
-            <td>tail -f 2025-04-04.log</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+      <AdminHelp />
+    </>
   );
 };
 
