@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import api from '../../apis/api';
 
 const MAX_LENGTH = 100000;
@@ -15,7 +15,9 @@ const Admin: React.FC = () => {
     highlight: false,
   };
   const [searchData, setSearchData] = useState(initialState);
-  const { keyword, filter, highlight } = searchData;
+  const searchRef = useRef(searchData);
+  const { keyword, filter, highlight } = searchRef.current;
+
   const [input, setInput] = useState('');
   const [output, setOutput] = useState<string[]>([]);
   const [styledOutput, setStyledOutput] = useState<React.ReactNode[]>([]);
@@ -31,67 +33,65 @@ const Admin: React.FC = () => {
     return () => socket?.close();
   }, [socket]);
 
-  const handleApplyStyledLine = useCallback(
-    (data: string) => {
-      const word = keyword.trim();
+  useEffect(() => {
+    searchRef.current = searchData;
+  }, [searchData]);
 
-      if (!word || (!filter && !highlight)) {
-        setStyledOutput((prev) => [...prev, data]);
-        return;
-      }
+  const handleApplyStyledLine = (data: string) => {
+    const word = keyword.trim();
 
-      if (filter && !data.toLowerCase().includes(word.toLowerCase())) {
-        return;
-      }
+    if (!word || (!filter && !highlight)) {
+      setStyledOutput((prev) => [...prev, data]);
+      return;
+    }
 
-      if (highlight) {
-        const regex = new RegExp(`(${word})`, 'gi');
-        const parts = data.split(regex);
-        const line = parts.map((part, idx) =>
+    if (filter && !data.toLowerCase().includes(word.toLowerCase())) {
+      return;
+    }
+
+    if (highlight) {
+      const regex = new RegExp(`(${word})`, 'gi');
+      const parts = data.split(regex);
+      const line = parts.map((part, idx) =>
+        part.toLowerCase() === word.toLowerCase() ? <mark key={idx}>{part}</mark> : part,
+      );
+      setStyledOutput((prev) => [...prev, line]);
+      return;
+    }
+
+    setStyledOutput((prev) => [...prev, data]);
+  };
+
+  const handleApplyStyledOutput = (data: string[]) => {
+    const word = keyword.trim();
+
+    if (!word || (!filter && !highlight)) {
+      setStyledOutput([...data]);
+      return;
+    }
+
+    let result = [...data];
+    if (filter) {
+      result = result.filter((v) => {
+        return v.toLowerCase().includes(word.toLowerCase());
+      });
+    }
+
+    if (highlight) {
+      const regex = new RegExp(`(${word})`, 'gi');
+      const highlighted = result.map((v) => {
+        const parts = v.split(regex);
+
+        return parts.map((part, idx) =>
           part.toLowerCase() === word.toLowerCase() ? <mark key={idx}>{part}</mark> : part,
         );
-        setStyledOutput((prev) => [...prev, line]);
-        return;
-      }
+      });
 
-      setStyledOutput((prev) => [...prev, data]);
-    },
-    [keyword, filter, highlight],
-  );
-
-  const handleApplyStyledOutput = useCallback(
-    (data: string[]) => {
-      const word = keyword.trim();
-
-      if (!word || (!filter && !highlight)) {
-        setStyledOutput([...data]);
-        return;
-      }
-
-      let result = [...data];
-      if (filter) {
-        result = result.filter((v) => {
-          return v.toLowerCase().includes(word.toLowerCase());
-        });
-      }
-
-      if (highlight) {
-        const regex = new RegExp(`(${word})`, 'gi');
-        const highlighted = result.map((v) => {
-          const parts = v.split(regex);
-
-          return parts.map((part, idx) =>
-            part.toLowerCase() === word.toLowerCase() ? <mark key={idx}>{part}</mark> : part,
-          );
-        });
-
-        setStyledOutput(highlighted);
-        return;
-      }
-      setStyledOutput(result);
-    },
-    [keyword, filter, highlight],
-  );
+      setStyledOutput(highlighted);
+      return;
+    }
+    setStyledOutput(result);
+  };
 
   const handleAppendOutput = (line: string) => {
     setOutput((prev) => {
