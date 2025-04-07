@@ -29,7 +29,6 @@ const Admin: React.FC = () => {
   };
   const [searchData, setSearchData] = useState(initialState);
   const searchRef = useRef(searchData);
-  const { keyword, filter, highlight } = searchRef.current;
 
   const [input, setInput] = useState('');
   const [output, setOutput] = useState<string[]>([]);
@@ -51,6 +50,7 @@ const Admin: React.FC = () => {
   }, [searchData]);
 
   const handleApplyStyledLine = (data: string) => {
+    const { keyword, filter, highlight } = searchRef.current;
     const word = keyword.trim();
 
     if (!word || (!filter && !highlight)) {
@@ -76,6 +76,7 @@ const Admin: React.FC = () => {
   };
 
   const handleApplyStyledOutput = (data: string[]) => {
+    const { keyword, filter, highlight } = searchRef.current;
     const word = keyword.trim();
 
     if (!word || (!filter && !highlight)) {
@@ -194,14 +195,17 @@ const Admin: React.FC = () => {
       </H3>
 
       <SearchForm onSubmit={handleSearch}>
-        <SearchInput type="text" id="keyword" value={keyword} onChange={handleChange} />
+        <SearchLabel>
+          키워드
+          <SearchInput type="text" id="keyword" value={searchData.keyword} onChange={handleChange} />
+        </SearchLabel>
         <SearchLabel>
           강조
-          <SearchInput type="checkbox" id="highlight" checked={highlight} onChange={handleChange} />
+          <SearchInput type="checkbox" id="highlight" checked={searchData.highlight} onChange={handleChange} />
         </SearchLabel>
         <SearchLabel>
           필터링
-          <SearchInput type="checkbox" id="filter" checked={filter} onChange={handleChange} />
+          <SearchInput type="checkbox" id="filter" checked={searchData.filter} onChange={handleChange} />
         </SearchLabel>
         <Searchbutton type="submit">검색</Searchbutton>
         <Searchbutton type="button" onClick={handleLogRequest} style={{ width: 100 }}>
