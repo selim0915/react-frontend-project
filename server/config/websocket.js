@@ -39,7 +39,7 @@ const setupWebSocket = () => {
       shell.stderr.on('data', (data) => {
         const stderr = iconv.decode(data, ENCODING).trimEnd();
         logger.error(`Error WebSocket : ${stderr}`);
-        ws.send(`Error : ${stderr}`);
+        ws.send(`Error : ${stderr}\n\n`);
       });
     };
     initProcess(process);

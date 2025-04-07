@@ -18,7 +18,7 @@ const Admin: React.FC = () => {
   const { keyword, filter, highlight } = searchData;
   const [input, setInput] = useState('');
   const [output, setOutput] = useState<string[]>([]);
-  const [styledOutput, setStyledOutput] = useState<string[]>([]);
+  const [styledOutput, setStyledOutput] = useState<React.ReactNode[]>([]);
   const [socket, setSocket] = useState<WebSocket | null>(null);
 
   useEffect(() => {
@@ -40,16 +40,21 @@ const Admin: React.FC = () => {
         return;
       }
 
-      let result = data;
       if (filter && !data.toLowerCase().includes(word.toLowerCase())) {
         return;
       }
 
       if (highlight) {
-        const wordRegex = new RegExp(word, 'gi');
-        result = data.replace(wordRegex, (match) => `<mark>${match}</mark>`);
+        const regex = new RegExp(`(${word})`, 'gi');
+        const parts = data.split(regex);
+        const line = parts.map((part, idx) =>
+          part.toLowerCase() === word.toLowerCase() ? <mark key={idx}>{part}</mark> : part,
+        );
+        setStyledOutput((prev) => [...prev, line]);
+        return;
       }
-      setStyledOutput((prev) => [...prev, result]);
+
+      setStyledOutput((prev) => [...prev, data]);
     },
     [keyword, filter, highlight],
   );
@@ -71,10 +76,17 @@ const Admin: React.FC = () => {
       }
 
       if (highlight) {
-        const wordRegex = new RegExp(word, 'gi');
-        result = result.map((v) => {
-          return v.replace(wordRegex, (match) => `<mark>${match}</mark>`);
+        const regex = new RegExp(`(${word})`, 'gi');
+        const highlighted = result.map((v) => {
+          const parts = v.split(regex);
+
+          return parts.map((part, idx) =>
+            part.toLowerCase() === word.toLowerCase() ? <mark key={idx}>{part}</mark> : part,
+          );
         });
+
+        setStyledOutput(highlighted);
+        return;
       }
       setStyledOutput(result);
     },
@@ -106,17 +118,17 @@ const Admin: React.FC = () => {
       socket.close();
       setSocket(null);
     }
-    handleAppendOutput('Close WebSocket');
+    handleAppendOutput('Close WebSocket\n');
   };
 
   const handleConnectWebSocket = () => {
     if (!socket) {
       const ws = new WebSocket('ws://localhost:3001');
-      ws.onopen = () => handleAppendOutput('Connection WebSocket');
+      ws.onopen = () => handleAppendOutput('Connection WebSocket\n');
       ws.onmessage = handleWebSocketMessage;
       ws.onclose = handleCloseWebSocket;
       ws.onerror = (error) => {
-        handleAppendOutput(`Error WebSocket: ${error}`);
+        handleAppendOutput(`Error WebSocket: ${error}\n`);
       };
       setSocket(ws);
     }
@@ -197,7 +209,7 @@ const Admin: React.FC = () => {
         }}
       >
         {styledOutput.map((line, index) => (
-          <div key={index} dangerouslySetInnerHTML={{ __html: line }} />
+          <div key={index}>{line}</div>
         ))}
 
         <form style={{ display: 'flex', gap: 3 }} onSubmit={handleSubmit}>
