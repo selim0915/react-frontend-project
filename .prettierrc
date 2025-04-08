@@ -1,7 +1,8 @@
 {
-  "endOfLine": "auto",
+  "endOfLine": "lf",
   "useTabs": false,
   "tabWidth": 2,
+  "trailingWhitespace": true,
   "trailingComma": "all",
   "printWidth": 120,
   "bracketSpacing": true,

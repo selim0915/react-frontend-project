@@ -8,6 +8,12 @@ const { WSS_PORT } = require('../properties');
 const ENCODING = 'utf-8';
 const GIT_BASH_PATH = 'C:\\Program Files\\Git\\bin\\bash.exe';
 
+/*
+ TODO
+ 1. 소켓 연결 후, 응답 후 현재 pwd, cd 경로 조회
+ 2. exit 후 새로운 process를 만들었음에도 이전 tail 로그가 여전히 WebSocket을 통해 클라이언트로 전송 되는 오류 수정
+ */
+
 const spawnChildProcess = () => {
   let childProcess = '';
   if (fs.existsSync(GIT_BASH_PATH)) {
@@ -54,7 +60,7 @@ const setupWebSocket = () => {
           process = spawnChildProcess();
           initProcess(process);
 
-          ws.send(`$ \n`);
+          ws.send('Reconnection WebSocket');
           return;
         }
         process.stdin.write(`${command}\r\n`);

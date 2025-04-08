@@ -1,110 +1,31 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import api from '../../apis/api';
-import {
-  H3,
-  Mark,
-  Searchbutton,
-  SearchForm,
-  SearchInput,
-  SearchLabel,
-  Shell,
-  ShellForm,
-  ShellInput,
-  ShellLine,
-} from './admin.style';
+import Shell from '../../components/Shell';
+import { Searchbutton, SearchForm, SearchInput, SearchLabel, ShellForm, ShellInput } from './admin.style';
 import AdminHelp from './adminHelp';
 
-const MAX_LENGTH = 100000;
+const MAX_LENGTH = 10000;
 
 const handleLogRequest = async () => {
   await api.get('/api/test');
 };
 
 const Admin: React.FC = () => {
-  const outputRef = useRef<HTMLDivElement>(null);
   const initialState = {
     keyword: '',
     filter: false,
     highlight: false,
   };
   const [searchData, setSearchData] = useState(initialState);
-  const searchRef = useRef(searchData);
-  const { keyword, filter, highlight } = searchRef.current;
+  const [draftsearchData, setDraftSearchData] = useState(initialState);
 
   const [input, setInput] = useState('');
   const [output, setOutput] = useState<string[]>([]);
-  const [styledOutput, setStyledOutput] = useState<React.ReactNode[]>([]);
   const [socket, setSocket] = useState<WebSocket | null>(null);
-
-  useEffect(() => {
-    if (outputRef.current) {
-      outputRef.current.scrollTop = outputRef.current.scrollHeight;
-    }
-  }, [styledOutput]);
 
   useEffect(() => {
     return () => socket?.close();
   }, [socket]);
-
-  useEffect(() => {
-    searchRef.current = searchData;
-  }, [searchData]);
-
-  const handleApplyStyledLine = (data: string) => {
-    const word = keyword.trim();
-
-    if (!word || (!filter && !highlight)) {
-      setStyledOutput((prev) => [...prev, data]);
-      return;
-    }
-
-    if (filter && !data.toLowerCase().includes(word.toLowerCase())) {
-      return;
-    }
-
-    if (highlight) {
-      const regex = new RegExp(`(${word})`, 'gi');
-      const parts = data.split(regex);
-      const line = parts.map((part, idx) =>
-        part.toLowerCase() === word.toLowerCase() ? <Mark key={idx}>{part}</Mark> : part,
-      );
-      setStyledOutput((prev) => [...prev, line]);
-      return;
-    }
-
-    setStyledOutput((prev) => [...prev, data]);
-  };
-
-  const handleApplyStyledOutput = (data: string[]) => {
-    const word = keyword.trim();
-
-    if (!word || (!filter && !highlight)) {
-      setStyledOutput([...data]);
-      return;
-    }
-
-    let result = [...data];
-    if (filter) {
-      result = result.filter((v) => {
-        return v.toLowerCase().includes(word.toLowerCase());
-      });
-    }
-
-    if (highlight) {
-      const regex = new RegExp(`(${word})`, 'gi');
-      const highlighted = result.map((v) => {
-        const parts = v.split(regex);
-
-        return parts.map((part, idx) =>
-          part.toLowerCase() === word.toLowerCase() ? <Mark key={idx}>{part}</Mark> : part,
-        );
-      });
-
-      setStyledOutput(highlighted);
-      return;
-    }
-    setStyledOutput(result);
-  };
 
   const handleAppendOutput = (line: string) => {
     setOutput((prev) => {
@@ -118,8 +39,6 @@ const Admin: React.FC = () => {
 
       return newOutput;
     });
-
-    handleApplyStyledLine(line);
   };
 
   const handleWebSocketMessage = (event: MessageEvent) => {
@@ -131,7 +50,6 @@ const Admin: React.FC = () => {
       socket.close();
       setSocket(null);
     }
-    handleAppendOutput('Close WebSocket\n');
   };
 
   const handleConnectWebSocket = () => {
@@ -139,7 +57,10 @@ const Admin: React.FC = () => {
       const ws = new WebSocket('ws://localhost:3001');
       ws.onopen = () => handleAppendOutput('Connection WebSocket\n');
       ws.onmessage = handleWebSocketMessage;
-      ws.onclose = handleCloseWebSocket;
+      ws.onclose = () => {
+        handleCloseWebSocket();
+        handleAppendOutput('Close WebSocket\n');
+      };
       ws.onerror = (error) => {
         handleAppendOutput(`Error WebSocket: ${error}\n`);
       };
@@ -149,14 +70,14 @@ const Admin: React.FC = () => {
 
   const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    handleApplyStyledOutput(output);
+    setSearchData(draftsearchData);
   };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (!socket) {
-      handleCloseWebSocket();
+      handleAppendOutput('Not Connection WebSocket\n');
       return;
     }
 
@@ -180,7 +101,7 @@ const Admin: React.FC = () => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value, checked, type } = e.target;
 
-    setSearchData((prevData) => ({
+    setDraftSearchData((prevData) => ({
       ...prevData,
       [id]: type === 'checkbox' ? checked : value,
     }));
@@ -188,35 +109,32 @@ const Admin: React.FC = () => {
 
   return (
     <>
-      <H3>
-        웹소켓 <b>{socket ? 'On' : 'Off'}</b>
-        <SearchInput type="checkbox" checked={!!socket} onChange={handleToggleChange} />
-      </H3>
-
       <SearchForm onSubmit={handleSearch}>
-        <SearchInput type="text" id="keyword" value={keyword} onChange={handleChange} />
+        <SearchLabel>
+          키워드
+          <SearchInput type="text" id="keyword" value={draftsearchData.keyword} onChange={handleChange} />
+        </SearchLabel>
         <SearchLabel>
           강조
-          <SearchInput type="checkbox" id="highlight" checked={highlight} onChange={handleChange} />
+          <SearchInput type="checkbox" id="highlight" checked={draftsearchData.highlight} onChange={handleChange} />
         </SearchLabel>
         <SearchLabel>
           필터링
-          <SearchInput type="checkbox" id="filter" checked={filter} onChange={handleChange} />
+          <SearchInput type="checkbox" id="filter" checked={draftsearchData.filter} onChange={handleChange} />
         </SearchLabel>
         <Searchbutton type="submit">검색</Searchbutton>
-        <Searchbutton type="button" onClick={handleLogRequest} style={{ width: 100 }}>
-          Add logs
+        <Searchbutton type="button" onClick={handleLogRequest}>
+          Add logs{' '}
         </Searchbutton>
       </SearchForm>
 
-      <Shell ref={outputRef}>
-        {styledOutput.map((line, index) => (
-          <ShellLine key={index}>{line}</ShellLine>
-        ))}
-        <ShellForm onSubmit={handleSubmit}>
-          $<ShellInput type="text" value={input} onChange={(e) => setInput(e.target.value)} placeholder="node cli..." />
-        </ShellForm>
-      </Shell>
+      <Shell output={output} searchData={searchData} maxLines={20} />
+
+      <ShellForm onSubmit={handleSubmit}>
+        $<ShellInput type="text" value={input} onChange={(e) => setInput(e.target.value)} placeholder="node cli..." />
+        웹소켓 {socket ? 'On' : 'Off'}
+        <SearchInput type="checkbox" checked={!!socket} onChange={handleToggleChange} />
+      </ShellForm>
 
       <AdminHelp />
     </>

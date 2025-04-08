@@ -1,8 +1,5 @@
 import styled from 'styled-components';
 
-export const Mark = styled.mark``;
-export const H3 = styled.h3``;
-
 export const SearchForm = styled.form`
   display: flex;
   gap: 3px;
@@ -10,9 +7,11 @@ export const SearchForm = styled.form`
 `;
 export const SearchLabel = styled.label``;
 export const SearchInput = styled.input``;
-export const Searchbutton = styled.button``;
+export const Searchbutton = styled.button`
+  width: 90px;
+`;
 
-export const Shell = styled.div`
+export const ShellDiv = styled.div`
   width: 50%;
   height: 500px;
   // color: '#fff',
@@ -22,12 +21,24 @@ export const Shell = styled.div`
   overflow: auto;
   resize: both;
 `;
-export const ShellLine = styled.div``;
+export const ShellLine = styled.div`
+  display: block;
+  &.hidden {
+    display: none;
+  }
+`;
+export const ShellWord = styled.span`
+  font-weight: normal;
+  background-color: unset;
+  &.highlight {
+    font-weight: bold;
+    background-color: yellow;
+  }
+`;
 export const ShellForm = styled.form`
   display: flex;
   gap: 3px;
-  padding: 10px 0px;
 `;
 export const ShellInput = styled.input`
-  width: 100%;
+  width: 400px;
 `;
