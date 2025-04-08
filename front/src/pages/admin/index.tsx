@@ -1,16 +1,7 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import api from '../../apis/api';
-import {
-  Searchbutton,
-  SearchForm,
-  SearchInput,
-  SearchLabel,
-  ShellDiv,
-  ShellForm,
-  ShellInput,
-  ShellLine,
-  ShellWord,
-} from './admin.style';
+import Shell from '../../components/Shell';
+import { Searchbutton, SearchForm, SearchInput, SearchLabel, ShellForm, ShellInput } from './admin.style';
 import AdminHelp from './adminHelp';
 
 const MAX_LENGTH = 10000;
@@ -20,7 +11,6 @@ const handleLogRequest = async () => {
 };
 
 const Admin: React.FC = () => {
-  const outputRef = useRef<HTMLDivElement>(null);
   const initialState = {
     keyword: '',
     filter: false,
@@ -34,52 +24,8 @@ const Admin: React.FC = () => {
   const [socket, setSocket] = useState<WebSocket | null>(null);
 
   useEffect(() => {
-    if (outputRef.current) {
-      outputRef.current.scrollTop = outputRef.current.scrollHeight;
-    }
-  }, [output]);
-
-  useEffect(() => {
     return () => socket?.close();
   }, [socket]);
-
-  const renderShell = (): React.ReactNode[] => {
-    const { keyword, filter, highlight } = searchData;
-    const searchWord = keyword.trim().toLowerCase();
-
-    return output.map((line, idx) => {
-      const isMatched = line.toLowerCase().includes(searchWord);
-
-      if (
-        // keyword 값이 없는 경우
-        !searchWord ||
-        // filter, highlight 모두 비활성화된 경우
-        (!filter && !highlight) ||
-        // highlight만 활성화되어 있고, keyword와 매칭되는 텍스트가 없는 경우
-        (!filter && highlight && !isMatched)
-      ) {
-        // 원본 텍스트 출력
-        return <ShellLine key={idx}>{line}</ShellLine>;
-      }
-
-      const regex = new RegExp(`(${searchWord})`, 'gi');
-      const parts = line.split(regex);
-
-      return (
-        <ShellLine key={idx} className={!isMatched && filter ? 'hidden' : ''}>
-          {parts.map((v, i) =>
-            v.toLowerCase() === searchWord ? (
-              <ShellWord key={i} className={isMatched && highlight ? 'highlight' : ''}>
-                {v}
-              </ShellWord>
-            ) : (
-              v
-            ),
-          )}
-        </ShellLine>
-      );
-    });
-  };
 
   const handleAppendOutput = (line: string) => {
     setOutput((prev) => {
@@ -182,7 +128,7 @@ const Admin: React.FC = () => {
         </Searchbutton>
       </SearchForm>
 
-      <ShellDiv ref={outputRef}>{renderShell()}</ShellDiv>
+      <Shell output={output} searchData={searchData} maxLines={20} />
 
       <ShellForm onSubmit={handleSubmit}>
         $<ShellInput type="text" value={input} onChange={(e) => setInput(e.target.value)} placeholder="node cli..." />
