@@ -68,7 +68,7 @@ const Admin: React.FC = () => {
       const line = parts.map((part, idx) =>
         part.toLowerCase() === word.toLowerCase() ? <Mark key={idx}>{part}</Mark> : part,
       );
-      setStyledOutput((prev) => [...prev, line]);
+      setStyledOutput((prev) => [...prev, <>{line}</>]);
       return;
     }
 
@@ -208,8 +208,8 @@ const Admin: React.FC = () => {
           <SearchInput type="checkbox" id="filter" checked={searchData.filter} onChange={handleChange} />
         </SearchLabel>
         <Searchbutton type="submit">검색</Searchbutton>
-        <Searchbutton type="button" onClick={handleLogRequest} style={{ width: 100 }}>
-          Add logs
+        <Searchbutton type="button" onClick={handleLogRequest}>
+          Add logs{' '}
         </Searchbutton>
       </SearchForm>
 
@@ -217,10 +217,11 @@ const Admin: React.FC = () => {
         {styledOutput.map((line, index) => (
           <ShellLine key={index}>{line}</ShellLine>
         ))}
-        <ShellForm onSubmit={handleSubmit}>
-          $<ShellInput type="text" value={input} onChange={(e) => setInput(e.target.value)} placeholder="node cli..." />
-        </ShellForm>
       </Shell>
+
+      <ShellForm onSubmit={handleSubmit}>
+        $<ShellInput type="text" value={input} onChange={(e) => setInput(e.target.value)} placeholder="node cli..." />
+      </ShellForm>
 
       <AdminHelp />
     </>

@@ -1,6 +1,9 @@
 import styled from 'styled-components';
 
-export const Mark = styled.mark``;
+export const Mark = styled.span`
+  font-weight: bold;
+  background-color: yellow;
+`;
 export const H3 = styled.h3``;
 
 export const SearchForm = styled.form`
@@ -10,7 +13,9 @@ export const SearchForm = styled.form`
 `;
 export const SearchLabel = styled.label``;
 export const SearchInput = styled.input``;
-export const Searchbutton = styled.button``;
+export const Searchbutton = styled.button`
+  width: 90px;
+`;
 
 export const Shell = styled.div`
   width: 50%;
@@ -26,8 +31,7 @@ export const ShellLine = styled.div``;
 export const ShellForm = styled.form`
   display: flex;
   gap: 3px;
-  padding: 10px 0px;
 `;
 export const ShellInput = styled.input`
-  width: 100%;
+  width: 400px;
 `;
