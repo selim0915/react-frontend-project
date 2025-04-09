@@ -3,13 +3,14 @@ import { CommonButton, CommonForm, CommonInput } from '../../styles/common.style
 import { WordKey } from '../../utils/constants';
 
 const Login: React.FC = () => {
-  const [id, setId] = useState<string>('');
+  const [userId, setUserId] = useState<string>('');
   const [password, setPassword] = useState<string>('');
+  const [msg, setMsg] = useState<string>('');
 
-  const _onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
-    if (id === 'id') {
-      setId(value);
+    if (id === 'userId') {
+      setUserId(value);
     } else if (id === 'password') {
       setPassword(value);
     }
@@ -18,30 +19,23 @@ const Login: React.FC = () => {
   const login = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (id && password) {
+    if (userId && password) {
       localStorage.setItem('token', 'abcdefg');
-      localStorage.setItem('id', id);
+      localStorage.setItem('id', userId);
       window.location.href = '/';
     } else {
-      alert('아이디와 비밀번호를 확인하세요.');
+      setMsg('아이디와 비밀번호를 확인하세요.');
     }
   };
 
   return (
-    <>
-      <CommonForm onSubmit={login}>
-        <h1>{WordKey.PROJECT_NAME}</h1>
-        <CommonInput type="text" id="id" value={id} onChange={_onChange} placeholder={'아이디를 입력하세요'} />
-        <CommonInput
-          type="password"
-          id="password"
-          value={password}
-          onChange={_onChange}
-          placeholder={'비밀번호를 입력하세요'}
-        />
-        <CommonButton type="submit">로그인</CommonButton>
-      </CommonForm>
-    </>
+    <CommonForm onSubmit={login}>
+      <h1>{WordKey.PROJECT_NAME}</h1>
+      <CommonInput type="text" id="userId" value={userId} onChange={handleChange} placeholder="아이디" />
+      <CommonInput type="password" id="password" value={password} onChange={handleChange} placeholder="비밀번호" />
+      <span>{msg}</span>
+      <CommonButton type="submit">로그인</CommonButton>
+    </CommonForm>
   );
 };
 

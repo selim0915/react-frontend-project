@@ -4,9 +4,12 @@ const path = require('path');
 const express = require('express');
 const cors = require('cors');
 // const db = require('./config/db');
+const webpack = require('webpack');
+const webpackDevMiddleware = require('webpack-dev-middleware');
 const { NODE_PORT } = require('./properties');
 const logger = require('./config/winston');
 const setupWebSocket = require('./config/websocket');
+const webpackConfig = require('../webpack.config');
 
 const app = express();
 
@@ -29,9 +32,6 @@ if (IS_PROD) {
     });
   });
 } else {
-  const webpack = require('webpack');
-  const webpackDevMiddleware = require('webpack-dev-middleware');
-  const webpackConfig = require('../webpack.config');
   const compiler = webpack(webpackConfig);
 
   app.use(
@@ -41,7 +41,7 @@ if (IS_PROD) {
   );
 
   app.get('*', (req, res, next) => {
-    let filename = path.join(compiler.outputPath, 'index.html');
+    const filename = path.join(compiler.outputPath, 'index.html');
     compiler.outputFileSystem.readFile(filename, (err, result) => {
       if (err) {
         return next(err);
@@ -49,6 +49,7 @@ if (IS_PROD) {
       res.set('content-type', 'text/html');
       res.send(result);
       res.end();
+      return null;
     });
   });
 }
@@ -58,6 +59,7 @@ app.use(express.static(ROOT));
 
 // route
 const routes = require('./routes/product');
+
 routes.initialize(app);
 
 // webSocket

@@ -1,27 +1,30 @@
-import axios, { AxiosInstance } from 'axios';
+import axios, { AxiosError, AxiosInstance } from 'axios';
 
 const api: AxiosInstance = axios.create();
+
+const handleError = (error: AxiosError): Promise<AxiosError> => {
+  const token = localStorage.getItem('token');
+  if (token) {
+    localStorage.removeItem('token');
+  }
+  return Promise.reject(error);
+};
 
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token');
     if (token) {
-      config.headers.Authorization = token;
+      const { headers } = config;
+      headers.Authorization = token;
     }
     return config;
   },
-  (error) => {
-    return Promise.reject(error);
-  },
+  (error) => handleError(error),
 );
 
 api.interceptors.response.use(
-  (response) => {
-    return response;
-  },
-  (error) => {
-    return Promise.reject(error);
-  },
+  (response) => response,
+  (error) => handleError(error),
 );
 
 export default api;

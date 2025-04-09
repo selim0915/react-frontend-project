@@ -33,7 +33,7 @@ exports.getProductById = async (req, res, next) => {
 
 exports.updateProduct = async (req, res, next) => {
   try {
-    let updatedProduct = await productModel.findByIdAndUpdate(req.params.productId, req.body, { new: true });
+    const updatedProduct = await productModel.findByIdAndUpdate(req.params.productId, req.body, { new: true });
     if (updatedProduct) {
       res.status(200).json(updatedProduct);
     } else {
@@ -46,7 +46,7 @@ exports.updateProduct = async (req, res, next) => {
 
 exports.deleteProduct = async (req, res, next) => {
   try {
-    let deletedProduct = await productModel.findByIdAndDelete(req.params.productId);
+    const deletedProduct = await productModel.findByIdAndDelete(req.params.productId);
     if (deletedProduct) {
       res.status(200).json(deletedProduct);
     } else {
