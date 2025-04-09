@@ -1,3 +1,5 @@
+path = require('path');
+
 module.exports = {
   env: {
     browser: true,
@@ -8,15 +10,7 @@ module.exports = {
     project: './tsconfig.json',
     tsconfigRootDir: __dirname,
   },
-  plugins: [],
-  extends: [
-    'eslint:recommended',
-    'plugin:@typescript-eslint/recommended',
-    'plugin:react/recommended',
-    'plugin:react-hooks/recommended',
-    'plugin:prettier/recommended',
-    'prettier',
-  ],
+  extends: ['plugin:@typescript-eslint/recommended', 'airbnb', 'airbnb/hooks', 'prettier'],
   rules: {
     '@typescript-eslint/no-var-requires': 0,
     '@typescript-eslint/no-unused-vars': [2, { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
