@@ -3,8 +3,9 @@ import Board from '../pages/board';
 import Chat from '../pages/chat';
 import Login from '../pages/login';
 import Main from '../pages/main';
+import { RouteType } from '../types/types';
 
-export const routeConfig = [
+export const routeConfig: RouteType[] = [
   {
     path: '/',
     element: Main,
@@ -31,3 +32,5 @@ export const routeConfig = [
     authRequired: true,
   },
 ];
+
+export default routeConfig;

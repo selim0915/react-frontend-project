@@ -7,19 +7,17 @@ interface ContentProp {
   isLoggedIn: boolean;
 }
 
-const Content: React.FC<ContentProp> = ({ isLoggedIn }) => {
-  return (
-    <StyledContent>
-      <Routes>
-        {routeConfig.map((route) => {
-          if (!route.authRequired || isLoggedIn) {
-            return <Route key={route.path} path={route.path} element={<route.element />} />;
-          }
-          return null;
-        })}
-      </Routes>
-    </StyledContent>
-  );
-};
+const Content: React.FC<ContentProp> = ({ isLoggedIn }) => (
+  <StyledContent>
+    <Routes>
+      {routeConfig.map((route) => {
+        if (!route.authRequired || isLoggedIn) {
+          return <Route key={route.path} path={route.path} element={<route.element />} />;
+        }
+        return null;
+      })}
+    </Routes>
+  </StyledContent>
+);
 
 export default Content;

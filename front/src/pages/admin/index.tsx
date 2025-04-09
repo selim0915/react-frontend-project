@@ -23,14 +23,12 @@ const Admin: React.FC = () => {
   const [output, setOutput] = useState<string[]>([]);
   const [socket, setSocket] = useState<WebSocket | null>(null);
 
-  useEffect(() => {
-    return () => socket?.close();
-  }, [socket]);
+  useEffect(() => () => socket?.close(), [socket]);
 
   const handleAppendOutput = (line: string) => {
     setOutput((prev) => {
       const newOutput = [...prev, line];
-      let totalLength = newOutput.reduce((sum, line) => sum + line.length, 0);
+      let totalLength = newOutput.reduce((sum, str) => sum + str.length, 0);
 
       while (totalLength > MAX_LENGTH && newOutput.length > 0) {
         totalLength -= newOutput[0].length;

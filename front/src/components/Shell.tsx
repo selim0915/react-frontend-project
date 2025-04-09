@@ -15,9 +15,7 @@ const Shell: React.FC<ShellProps> = ({ output, searchData, maxLines = 100 }) => 
   const outputRef = useRef<HTMLDivElement>(null);
   const { keyword, filter, highlight } = searchData;
 
-  const visibleOutput = useMemo(() => {
-    return output.slice(-maxLines);
-  }, [output, maxLines]);
+  const visibleOutput = useMemo(() => output.slice(-maxLines), [output, maxLines]);
 
   useEffect(() => {
     if (outputRef.current) {

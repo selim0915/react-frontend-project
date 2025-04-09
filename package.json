@@ -26,7 +26,8 @@
     "mongoose": "^8.0.3",
     "morgan": "^1.10.0",
     "winston": "^3.17.0",
-    "winston-daily-rotate-file": "^5.0.0"
+    "winston-daily-rotate-file": "^5.0.0",
+    "ws": "^8.18.1"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.23.9",

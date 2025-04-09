@@ -5,24 +5,22 @@ interface NavProp {
   isLoggedIn: boolean;
 }
 
-const Nav: React.FC<NavProp> = ({ isLoggedIn }) => {
-  return (
-    <StyledNav>
-      <StyledNavItemWrap>
+const Nav: React.FC<NavProp> = ({ isLoggedIn }) => (
+  <StyledNav>
+    <StyledNavItemWrap>
+      <StyledNavItem>
+        <StyledNavItemIink href="/board">게시판</StyledNavItemIink>
+      </StyledNavItem>
+      <StyledNavItem>
+        <StyledNavItemIink href="/chat">채팅창</StyledNavItemIink>
+      </StyledNavItem>
+      {isLoggedIn && (
         <StyledNavItem>
-          <StyledNavItemIink href="/board">게시판</StyledNavItemIink>
+          <StyledNavItemIink href="/admin">관리자</StyledNavItemIink>
         </StyledNavItem>
-        <StyledNavItem>
-          <StyledNavItemIink href="/chat">채팅창</StyledNavItemIink>
-        </StyledNavItem>
-        {isLoggedIn && (
-          <StyledNavItem>
-            <StyledNavItemIink href="/admin">관리자</StyledNavItemIink>
-          </StyledNavItem>
-        )}
-      </StyledNavItemWrap>
-    </StyledNav>
-  );
-};
+      )}
+    </StyledNavItemWrap>
+  </StyledNav>
+);
 
 export default Nav;

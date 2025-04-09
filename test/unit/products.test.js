@@ -1,6 +1,6 @@
+const httpMocks = require('node-mocks-http');
 const productController = require('../../controller/products');
 const productModel = require('../../models/Product');
-const httpMocks = require('node-mocks-http');
 const newProduct = require('../data/new-product.json');
 const allProducts = require('../data/all-products.json');
 
@@ -13,7 +13,9 @@ productModel.findByIdAndDelete = jest.fn();
 const productId = '5diijfdsijdfhuehwufwe';
 const updatedProduct = { name: 'updated name', description: 'updated description' };
 
-let req, res, next;
+let req;
+let res;
+let next;
 beforeEach(() => {
   req = httpMocks.createRequest();
   res = httpMocks.createResponse();
@@ -153,7 +155,7 @@ describe('Product Controller Delete', () => {
     expect(productModel.findByIdAndDelete).toBeCalledWith(productId);
   });
   it('should return 200 response ', async () => {
-    let deletedProduct = {
+    const deletedProduct = {
       name: 'deletedProduct',
       description: 'it is deleted',
     };

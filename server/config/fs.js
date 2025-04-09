@@ -1,14 +1,14 @@
 const fs = require('fs');
 const path = require('path');
-const logger = require('./config/winton');
+const logger = require('./winston');
 
 const logDir = path.resolve(__dirname, '../../logs');
 const errorLogDir = path.join(logDir, 'error');
 
 const removeAuditFile = () => {
   try {
-    let jsonFiles = fs.readdirSync(logDir);
-    let errorJsonFiles = fs.readdirSync(errorLogDir);
+    const jsonFiles = fs.readdirSync(logDir);
+    const errorJsonFiles = fs.readdirSync(errorLogDir);
 
     const auditFiles = jsonFiles.filter((file) => file.endsWith('.audit.json'));
     const errorAuditFiles = errorJsonFiles.filter((file) => file.endsWith('.audit.json'));

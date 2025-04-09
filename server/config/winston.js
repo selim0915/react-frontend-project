@@ -1,21 +1,20 @@
 const winston = require('winston');
-const winstonDaily = require('winston-daily-rotate-file');
+const WinstonDaily = require('winston-daily-rotate-file');
 const morgan = require('morgan');
 const process = require('process');
 const path = require('path');
+
 const { combine, timestamp, printf, colorize } = winston.format;
 
 const logFormat = combine(
   timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
-  printf(({ timestamp, level, message }) => {
-    return `${timestamp} ${level}: ${message}`;
-  }),
+  printf(({ timestamp: ts, level, message }) => `${ts} ${level}: ${message}`),
 );
 const logDir = path.resolve(__dirname, '../../logs');
 const errorLogDir = path.join(logDir, 'error');
 
 const transports = [
-  new winstonDaily({
+  new WinstonDaily({
     level: 'info',
     maxsize: 1024 * 1024, // 1MB
     dirname: logDir,
@@ -24,7 +23,7 @@ const transports = [
     format: logFormat,
     datePatten: 'YYYY-MM-DD',
   }),
-  new winstonDaily({
+  new WinstonDaily({
     level: 'error',
     maxsize: 1024 * 1024,
     dirname: errorLogDir,
