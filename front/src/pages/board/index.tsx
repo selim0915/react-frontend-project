@@ -13,7 +13,7 @@ const Board: React.FC = () => {
 
   return (
     <>
-      <h1>Board</h1>
+      <h1>Board Page</h1>
       {productList.map((item, index) => {
         const idx = `${item}-${index}`;
         return (
