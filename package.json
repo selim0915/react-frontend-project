@@ -13,7 +13,8 @@
     "build": "cross-env NODE_ENV=production webpack --config ./webpack.config.js",
     "dev": "cross-env NODE_ENV=development webpack serve --config ./webpack.config.js",
     "local": "cross-env NODE_ENV=development node ./server/server.js",
-    "prod": "npm run build && cross-env NODE_ENV=production node ./server/server.js"
+    "prod": "npm run build && cross-env NODE_ENV=production node ./server/server.js",
+    "parcel": "parcel ./front/public/index.html"
   },
   "engines": {
     "node": "18.19.0"
@@ -33,6 +34,7 @@
     "iconv-lite": "^0.6.3",
     "mongoose": "^8.0.3",
     "morgan": "^1.10.0",
+    "parcel": "^2.14.4",
     "winston": "^3.17.0",
     "winston-daily-rotate-file": "^5.0.0",
     "ws": "^8.18.1"
