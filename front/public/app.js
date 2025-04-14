@@ -27,14 +27,17 @@ window.addEventListener('hashchange', () => {
 });
 
 for (let i = 0; i < 10; i += 1) {
-  const li = document.createElement('li');
-  const a = document.createElement('a');
+  const div = document.createElement('div');
 
-  a.href = `#${newsFeed[i].id}`;
-  a.innerHTML = `${newsFeed[i].title}(${newsFeed[i].comments_count})`;
+  div.innerHTML = `
+  <li>
+    <a href="#${newsFeed[i].id}">
+      ${newsFeed[i].title} (${newsFeed[i].comments_count})
+    </a>
+  </li>
+  `;
 
-  li.appendChild(a);
-  ul.appendChild(li);
+  ul.appendChild(div.firstElementChild); // div.children[0]
 }
 
 document.getElementById('root').appendChild(ul);
