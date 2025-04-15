@@ -1,12 +1,26 @@
 /* eslint-disable no-restricted-globals */
-const container = document.getElementById('root');
+type NewsFeed = {
+  id: number;
+  comments_count: number;
+  url: string;
+  user: string;
+  time_ago: string;
+  points: number;
+  title: string;
+  read?: boolean;
+};
 
-const ajax = new XMLHttpRequest();
+type Store = {
+  currentPage: number;
+  feeds: NewsFeed[];
+};
 
+const container: HTMLElement | null = document.getElementById('root');
+const ajax: XMLHttpRequest = new XMLHttpRequest();
 const NEWS_URL = 'https://api.hnpwa.com/v0/news/1.json';
 const CONTENT_URL = 'https://api.hnpwa.com/v0/item/@id.json';
 
-const store = {
+const store: Store = {
   currentPage: 1,
   feeds: [],
 };
@@ -25,8 +39,14 @@ function makeFeeds(feeds) {
   }));
 }
 
+function updateView(html) {
+  if (container) {
+    container.innerHTML = html;
+  }
+}
+
 function newsFeedList() {
-  let newsFeed = store.feeds;
+  let newsFeed: NewsFeed[] = store.feeds;
   const newsList = [];
 
   let template = `
@@ -96,7 +116,7 @@ function newsFeedList() {
     store.currentPage < totalPages ? store.currentPage + 1 : store.currentPage,
   );
 
-  container.innerHTML = template;
+  updateView(template);
 }
 
 function newsDetail() {
@@ -163,7 +183,7 @@ function newsDetail() {
 
   template = template.replace('{{__comments__}}', makeComment(newsContent.comments));
 
-  container.innerHTML = template;
+  updateView(template);
 }
 
 function router() {
