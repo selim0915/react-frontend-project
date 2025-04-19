@@ -1,32 +1,87 @@
 /* eslint-disable no-restricted-globals */
-const container = document.getElementById('root');
+type News = {
+  id: number;
+  time_ago: string;
+  title: string;
+  url: string;
+  user: string;
+  content: string;
+};
 
-const ajax = new XMLHttpRequest();
+type NewsFeed = News & {
+  comments_count: number;
+  points: number;
+  read?: boolean;
+};
 
+type NewsComment = News & {
+  comments: NewsComment[];
+  level: number;
+};
+type NewsDetail = News & {
+  comments: NewsComment[];
+};
+
+type Store = {
+  currentPage: number;
+  feeds: NewsFeed[];
+};
+
+const container: HTMLElement | null = document.getElementById('root');
+const ajax: XMLHttpRequest = new XMLHttpRequest();
 const NEWS_URL = 'https://api.hnpwa.com/v0/news/1.json';
 const CONTENT_URL = 'https://api.hnpwa.com/v0/item/@id.json';
-
-const store = {
+const store: Store = {
   currentPage: 1,
   feeds: [],
 };
 
-function getData(url) {
+function getData<AjaxResponse>(url: string): AjaxResponse {
   ajax.open('GET', url, false);
   ajax.send();
 
   return JSON.parse(ajax.response);
 }
 
-function makeFeeds(feeds) {
+function makeFeeds(feeds: NewsFeed[]): NewsFeed[] {
   return feeds.map((feed) => ({
     ...feed,
     read: false,
   }));
 }
 
-function newsFeedList() {
-  let newsFeed = store.feeds;
+function updateView(html: string): void {
+  if (container) {
+    container.innerHTML = html;
+  }
+}
+
+function makeComment(comments: NewsComment[]): string {
+  const commentString = [];
+
+  for (let i = 0; i < comments.length; i += 1) {
+    const comment: NewsComment = comments[i];
+
+    commentString.push(`
+        <div style="padding-left: ${comment.level * 40}px;" class="mt-4">
+          <div class="text-gray-400">
+            <i class="fa fa-sort-up mr-2"></i>
+            <strong>${comment.user}</strong> ${comment.time_ago}
+          </div>
+          <p class="text-gray-700">${comment.content}</p>
+        </div>      
+      `);
+
+    if (comment.comments.length > 0) {
+      commentString.push(makeComment(comment.comments));
+    }
+  }
+
+  return commentString.join('');
+}
+
+function newsFeedList(): void {
+  let newsFeed: NewsFeed[] = store.feeds;
   const newsList = [];
 
   let template = `
@@ -56,7 +111,7 @@ function newsFeedList() {
   `;
 
   if (newsFeed.length === 0) {
-    const makeNewsFeed = makeFeeds(getData(NEWS_URL));
+    const makeNewsFeed = makeFeeds(getData<NewsFeed[]>(NEWS_URL));
     store.feeds = makeNewsFeed;
     newsFeed = makeNewsFeed;
   }
@@ -90,18 +145,18 @@ function newsFeedList() {
 
   template = template.replace('{{__total_news_feed__}}', `${store.currentPage} / ${totalPages}`);
   template = template.replace('{{__news_feed__}}', newsList.join(''));
-  template = template.replace('{{__prev_page__}}', store.currentPage > 1 ? store.currentPage - 1 : 1);
+  template = template.replace('{{__prev_page__}}', String(store.currentPage > 1 ? store.currentPage - 1 : 1));
   template = template.replace(
     '{{__next_page__}}',
-    store.currentPage < totalPages ? store.currentPage + 1 : store.currentPage,
+    String(store.currentPage < totalPages ? store.currentPage + 1 : store.currentPage),
   );
 
-  container.innerHTML = template;
+  updateView(template);
 }
 
 function newsDetail() {
   const id = location.hash.substr(7);
-  const newsContent = getData(CONTENT_URL.replace('@id', id));
+  const newsContent = getData<NewsDetail>(CONTENT_URL.replace('@id', id));
 
   let template = `
     <div class="bg-gray-600 min-h-screen pb-8">
@@ -139,31 +194,9 @@ function newsDetail() {
     }
   }
 
-  function makeComment(comments, called = 0) {
-    const commentString = [];
-
-    for (let i = 0; i < comments.length; i += 1) {
-      commentString.push(`
-        <div style="padding-left: ${called * 40}px;" class="mt-4">
-          <div class="text-gray-400">
-            <i class="fa fa-sort-up mr-2"></i>
-            <strong>${comments[i].user}</strong> ${comments[i].time_ago}
-          </div>
-          <p class="text-gray-700">${comments[i].content}</p>
-        </div>      
-      `);
-
-      if (comments[i].comments.length > 0) {
-        commentString.push(makeComment(comments[i].comments, called + 1));
-      }
-    }
-
-    return commentString.join('');
-  }
-
   template = template.replace('{{__comments__}}', makeComment(newsContent.comments));
 
-  container.innerHTML = template;
+  updateView(template);
 }
 
 function router() {
