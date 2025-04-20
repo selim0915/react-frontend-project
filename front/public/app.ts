@@ -1,34 +1,34 @@
 /* eslint-disable no-restricted-globals */
-type News = {
-  id: number;
-  time_ago: string;
-  title: string;
-  url: string;
-  user: string;
-  content: string;
-};
+// eslint-disable-next-line max-classes-per-file
+interface News {
+  readonly id: number;
+  readonly time_ago: string;
+  readonly title: string;
+  readonly url: string;
+  readonly user: string;
+  readonly content: string;
+}
 
-type NewsFeed = News & {
-  comments_count: number;
-  points: number;
+interface NewsFeed extends News {
+  readonly comments_count: number;
+  readonly points: number;
   read?: boolean;
-};
+}
 
-type NewsComment = News & {
-  comments: NewsComment[];
-  level: number;
-};
-type NewsDetail = News & {
-  comments: NewsComment[];
-};
+interface NewsComment extends News {
+  readonly comments: NewsComment[];
+  readonly level: number;
+}
 
-type Store = {
+interface NewsDetail extends News {
+  readonly comments: NewsComment[];
+}
+interface Store {
   currentPage: number;
   feeds: NewsFeed[];
-};
+}
 
 const container: HTMLElement | null = document.getElementById('root');
-const ajax: XMLHttpRequest = new XMLHttpRequest();
 const NEWS_URL = 'https://api.hnpwa.com/v0/news/1.json';
 const CONTENT_URL = 'https://api.hnpwa.com/v0/item/@id.json';
 const store: Store = {
@@ -36,11 +36,33 @@ const store: Store = {
   feeds: [],
 };
 
-function getData<AjaxResponse>(url: string): AjaxResponse {
-  ajax.open('GET', url, false);
-  ajax.send();
+class Api {
+  url: string;
 
-  return JSON.parse(ajax.response);
+  ajax: XMLHttpRequest;
+
+  constructor(url: string) {
+    this.url = url;
+    this.ajax = new XMLHttpRequest();
+  }
+
+  protected getRequest<AjaxResponse>(): AjaxResponse {
+    this.ajax.open('GET', this.url, false);
+    this.ajax.send();
+
+    return JSON.parse(this.ajax.response);
+  }
+}
+
+class NewsFeedApi extends Api {
+  getData(): NewsFeed[] {
+    return this.getRequest<NewsFeed[]>();
+  }
+}
+class NewsDetailApi extends Api {
+  getData(): NewsDetail {
+    return this.getRequest<NewsDetail>();
+  }
 }
 
 function makeFeeds(feeds: NewsFeed[]): NewsFeed[] {
@@ -81,6 +103,7 @@ function makeComment(comments: NewsComment[]): string {
 }
 
 function newsFeedList(): void {
+  const api = new NewsFeedApi(NEWS_URL);
   let newsFeed: NewsFeed[] = store.feeds;
   const newsList = [];
 
@@ -111,7 +134,7 @@ function newsFeedList(): void {
   `;
 
   if (newsFeed.length === 0) {
-    const makeNewsFeed = makeFeeds(getData<NewsFeed[]>(NEWS_URL));
+    const makeNewsFeed = makeFeeds(api.getData());
     store.feeds = makeNewsFeed;
     newsFeed = makeNewsFeed;
   }
@@ -156,7 +179,8 @@ function newsFeedList(): void {
 
 function newsDetail() {
   const id = location.hash.substr(7);
-  const newsContent = getData<NewsDetail>(CONTENT_URL.replace('@id', id));
+  const api = new NewsDetailApi(CONTENT_URL.replace('@id', id));
+  const newsContent = api.getData();
 
   let template = `
     <div class="bg-gray-600 min-h-screen pb-8">
