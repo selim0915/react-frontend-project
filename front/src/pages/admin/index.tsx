@@ -35,9 +35,9 @@ const logs = `
 
 const Admin: React.FC = () => {
   const initialState = {
-    keyword: '',
+    keyword: 'ERROR:',
     filter: false,
-    highlight: false,
+    highlight: true,
   };
   const [searchData, setSearchData] = useState(initialState);
   const [draftsearchData, setDraftSearchData] = useState(initialState);
