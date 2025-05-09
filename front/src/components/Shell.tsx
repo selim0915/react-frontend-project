@@ -52,7 +52,7 @@ const Shell: React.FC<ShellProps> = ({ output, searchData, maxLines = 100, autoS
             const vId = `${lineId}-${i}`;
 
             return v.toLowerCase() === searchWord ? (
-              <ShellWord key={vId} className={isMatched ? 'highlight' : ''}>
+              <ShellWord key={vId} className={isMatched && highlight ? 'highlight' : ''}>
                 {v}
               </ShellWord>
             ) : (
