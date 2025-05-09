@@ -6,9 +6,13 @@ export const SearchForm = styled.form`
   padding: 10px 0px;
 `;
 export const SearchLabel = styled.label``;
-export const SearchInput = styled.input``;
+export const SearchInput = styled.input`
+  border: 1px solid;
+`;
 export const Searchbutton = styled.button`
-  width: 90px;
+  background-color: gray;
+  border-radius: 20px;
+  padding: 0 10px;
 `;
 
 export const ShellDiv = styled.div`

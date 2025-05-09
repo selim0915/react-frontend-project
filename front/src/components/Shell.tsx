@@ -4,27 +4,29 @@ import { ShellDiv, ShellLine, ShellWord } from '../pages/admin/admin.style';
 interface ShellProps {
   output: string[];
   searchData: {
-    keyword: string;
-    filter: boolean;
-    highlight: boolean;
+    keyword?: string;
+    filter?: boolean;
+    highlight?: boolean;
   };
-  maxLines?: number;
+  autoScroll?: boolean; // 자동 스크롤 여부
+  maxLines?: number; // 화면에 표시할 라인 수
 }
 
-const Shell: React.FC<ShellProps> = ({ output, searchData, maxLines = 100 }) => {
+const Shell: React.FC<ShellProps> = ({ output, searchData, maxLines = 100, autoScroll = true }) => {
   const outputRef = useRef<HTMLDivElement>(null);
   const { keyword, filter, highlight } = searchData;
 
   const visibleOutput = useMemo(() => output.slice(-maxLines), [output, maxLines]);
 
+  // 자동 스크롤 기능
   useEffect(() => {
-    if (outputRef.current) {
+    if (autoScroll && outputRef.current) {
       outputRef.current.scrollTop = outputRef.current.scrollHeight;
     }
-  }, [visibleOutput]);
+  }, [autoScroll, visibleOutput]);
 
   const render = (): React.ReactNode[] => {
-    const searchWord = keyword.trim().toLowerCase();
+    const searchWord = keyword?.trim().toLowerCase() || '';
 
     return visibleOutput.map((line, idx) => {
       const lineId = `${line}-${idx}`;
