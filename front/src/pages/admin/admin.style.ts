@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 
 export const SearchForm = styled.form`
   display: flex;
@@ -23,18 +23,31 @@ export const ShellDiv = styled.div`
   overflow: auto;
   resize: both;
 `;
+export const ShellForm = styled.form`
+  display: flex;
+  gap: 3px;
+`;
+export const ShellInput = styled.input`
+  width: 400px;
+  border: 1px solid;
+`;
+
 interface ShellSearchProps {
+  'data-word'?: string;
+  className?: string;
   $keyword?: string;
   $filter?: boolean;
   $highlight?: boolean;
 }
+
 export const ShellLine = styled.div<ShellSearchProps>`
   display: block;
 
   ${(props) =>
     props.$filter &&
-    props.className?.includes(props.$keyword || '') &&
-    `
+    props.$keyword &&
+    !props['data-word']?.includes(props.$keyword) &&
+    css`
       display: none;
     `}
 `;
@@ -44,16 +57,11 @@ export const ShellWord = styled.span<ShellSearchProps>`
 
   ${(props) =>
     props.$highlight &&
-    props.className === props.$keyword &&
-    `
+    props.$keyword &&
+    props['data-word']?.includes(props.$keyword) &&
+    css`
       font-weight: bold;
       background-color: yellow;
+      color: black;
     `}
-`;
-export const ShellForm = styled.form`
-  display: flex;
-  gap: 3px;
-`;
-export const ShellInput = styled.input`
-  width: 400px;
 `;

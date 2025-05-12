@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { ShellDiv, ShellLine, ShellWord } from '../pages/admin/admin.style';
 
 interface ShellProps {
@@ -15,21 +15,50 @@ interface ShellProps {
     /** 검색 결과 하이라이트 활성화 여부 */
     highlight?: boolean;
   };
-  /** 로그가가 추가될 때 자동 스크롤 여부 */
+  /** 로그가 추가될 때 자동 스크롤 여부 */
   autoScroll?: boolean;
 }
 
-const Shell: React.FC<ShellProps> = ({ output, searchData = {}, maxLines = 100, autoScroll = true }) => {
+interface LogEntry {
+  id: string;
+  line: string;
+  partInfo: { id: string; char: string; className: string }[];
+}
+
+export const trimAndLower = (str: string | undefined): string => str?.trim().toLowerCase() || '';
+
+export const Shell: React.FC<ShellProps> = ({ output, searchData = {}, maxLines = 100, autoScroll = true }) => {
   const outputRef = useRef<HTMLDivElement>(null);
-  const [logBuffer, setLogBuffer] = useState<string[]>([]);
+  const [logBuffer, setLogBuffer] = useState<LogEntry[]>([]);
   const { keyword, filter, highlight } = searchData;
 
-  // const getOutPutSetting = () => {};
+  // 검색어 최적화
+  const searchWord = useMemo(() => trimAndLower(keyword), [keyword]);
 
-  // 새로운 로그 추가시
+  // 로그 추가시 설정
   useEffect(() => {
     setLogBuffer((prevBuffer) => {
-      const newBuffer = [...prevBuffer, ...output];
+      const newEntries = output.map((line, lineIdx) => {
+        const lineId = `line-${Date.now()}-${lineIdx}`;
+
+        // const splitWord = /[-:[\]/]+/;
+        const regex = /(\s+)/g;
+        const parts = line.split(regex);
+
+        const partInfo = parts.map((char, partIdx) => {
+          const className = '';
+          return {
+            id: `${lineId}-${partIdx}`,
+            char,
+            className,
+          };
+        });
+
+        return { id: lineId, line, partInfo };
+      });
+
+      // 버퍼 크기 자르기
+      const newBuffer = [...prevBuffer, ...newEntries];
       if (newBuffer.length > maxLines) {
         return newBuffer.slice(-maxLines);
       }
@@ -44,50 +73,22 @@ const Shell: React.FC<ShellProps> = ({ output, searchData = {}, maxLines = 100, 
     }
   }, [autoScroll, logBuffer]);
 
-  const render = (): React.ReactNode[] => {
-    const searchWord = keyword?.trim().toLowerCase() || '';
-
-    return logBuffer.map((line, idx) => {
-      const lineId = `${line}-${idx}`;
-
-      // includes() 사용 안하기.
-      // const isMatched = line.toLowerCase().includes(searchWord);
-
-      // if (
-      //   // keyword 값이 없는 경우
-      //   !searchWord ||
-      //   // filter, highlight 모두 비활성화된 경우
-      //   (!filter && !highlight) ||
-      //   // highlight만 활성화되어 있고, keyword와 매칭되는 텍스트가 없는 경우
-      //   (!filter && highlight && !isMatched)
-      // ) {
-      //   return <ShellLine key={lineId}>{line}</ShellLine>;
-      // }
-
-      // 공백기준으로 단어 분리
-      const regex = /(\s+)/;
-      // const regex = new RegExp(`(${searchWord})`, 'gi');
-      // const parts = line.split(regex);
-      const parts = line.split(regex);
-
-      return (
-        // 필터링을 개행라인 기준으로
-        <ShellLine key={lineId} className={line} $keyword={searchWord} $filter={filter}>
-          {parts.map((v, i) => {
-            const vId = `${lineId}-${i}`;
-
-            return v !== ' ' ? (
-              <ShellWord key={vId} className={v.trim().toLowerCase()} $keyword={searchWord} $highlight={highlight}>
-                {v}
-              </ShellWord>
-            ) : (
-              <React.Fragment key={vId}>{v}</React.Fragment>
-            );
-          })}
-        </ShellLine>
-      );
-    });
-  };
+  const render = (): React.ReactNode[] =>
+    logBuffer.map((log) => (
+      <ShellLine key={log.id} data-word={trimAndLower(log.line)} $keyword={searchWord} $filter={filter}>
+        {log.partInfo.map((part) => (
+          <ShellWord
+            key={part.id}
+            className={trimAndLower(part.className)}
+            data-word={trimAndLower(part.char)}
+            $keyword={searchWord}
+            $highlight={highlight}
+          >
+            {part.char}
+          </ShellWord>
+        ))}
+      </ShellLine>
+    ));
 
   return <ShellDiv ref={outputRef}>{render()}</ShellDiv>;
 };

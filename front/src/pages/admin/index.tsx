@@ -4,8 +4,6 @@ import Shell from '../../components/Shell';
 import { Searchbutton, SearchForm, SearchInput, SearchLabel, ShellForm, ShellInput } from './admin.style';
 import AdminHelp from './adminHelp';
 
-const MAX_LENGTH = 10000;
-
 const logs = `
 [2025-05-09 11:36:10 KST] INFO: Received request: GET /api/users from 192.168.1.101
 [2025-05-09 11:36:10 KST] DEBUG: Request headers: { "User-Agent": "Mozilla/5.0...", "Accept": "application/json" }
@@ -35,7 +33,7 @@ const logs = `
 
 const Admin: React.FC = () => {
   const initialState = {
-    keyword: 'ERROR:',
+    keyword: 'ERROR',
     filter: false,
     highlight: true,
   };
@@ -50,17 +48,7 @@ const Admin: React.FC = () => {
   useEffect(() => () => socket?.close(), [socket]);
 
   const handleAppendOutput = (line: string) => {
-    setOutput((prev) => {
-      const newOutput = [...prev, line];
-      let totalLength = newOutput.reduce((sum, str) => sum + str.length, 0);
-
-      while (totalLength > MAX_LENGTH && newOutput.length > 0) {
-        totalLength -= newOutput[0].length;
-        newOutput.shift();
-      }
-
-      return newOutput;
-    });
+    setOutput([line]);
   };
 
   const handleWebSocketMessage = (event: MessageEvent) => {
@@ -138,7 +126,8 @@ const Admin: React.FC = () => {
     if (socket) {
       await api.get('/api/test');
     } else {
-      logs.split('\n').map((v) => handleAppendOutput(v));
+      const lines = logs.trim().split('\n');
+      lines.forEach((v) => setOutput((prev) => [...prev, v]));
     }
   };
 
@@ -152,7 +141,7 @@ const Admin: React.FC = () => {
         <SearchInput type="checkbox" id="autoScroll" checked={autoScroll} onChange={handleChange} />
       </>
       <Searchbutton type="button" onClick={handleLogRequest}>
-        Add logs{' '}
+        Add logs
       </Searchbutton>
 
       <SearchForm onSubmit={handleSearch}>
@@ -167,6 +156,7 @@ const Admin: React.FC = () => {
 
         <Searchbutton type="submit">검색</Searchbutton>
       </SearchForm>
+
       <Shell output={output} searchData={searchData} maxLines={200} autoScroll={autoScroll} />
 
       <ShellForm onSubmit={handleSubmit}>
