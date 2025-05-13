@@ -15,6 +15,12 @@ export const Searchbutton = styled.button`
   padding: 0 10px;
 `;
 
+interface ShellSearchProps {
+  'data-word'?: string;
+  $keyword?: string;
+  $filter?: boolean;
+  $highlight?: boolean;
+}
 export const ShellDiv = styled.div`
   width: 50%;
   height: 500px;
@@ -23,23 +29,6 @@ export const ShellDiv = styled.div`
   overflow: auto;
   resize: both;
 `;
-export const ShellForm = styled.form`
-  display: flex;
-  gap: 3px;
-`;
-export const ShellInput = styled.input`
-  width: 400px;
-  border: 1px solid;
-`;
-
-interface ShellSearchProps {
-  'data-word'?: string;
-  className?: string;
-  $keyword?: string;
-  $filter?: boolean;
-  $highlight?: boolean;
-}
-
 export const ShellLine = styled.div<ShellSearchProps>`
   display: block;
 
@@ -58,7 +47,7 @@ export const ShellWord = styled.span<ShellSearchProps>`
   ${(props) =>
     props.$highlight &&
     props.$keyword &&
-    props['data-word']?.includes(props.$keyword) &&
+    props['data-word'] === props.$keyword &&
     css`
       font-weight: bold;
       background-color: yellow;

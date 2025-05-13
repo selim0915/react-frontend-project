@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import api from '../../apis/api';
 import Shell from '../../components/Shell';
-import { Searchbutton, SearchForm, SearchInput, SearchLabel, ShellForm, ShellInput } from './admin.style';
+import { Searchbutton, SearchForm, SearchInput, SearchLabel } from './admin.style';
 import AdminHelp from './adminHelp';
 
 const logs = `
@@ -16,9 +16,7 @@ const logs = `
 [2025-05-09 11:37:05 KST] ERROR: Failed to process order for user 1: Insufficient stock.
 [2025-05-09 11:37:05 KST] INFO: Sent response: 400 Bad Request for /api/orders in 50ms
 [2025-05-09 11:37:05 KST] DEBUG: Response body: { "error": "Insufficient stock" }
-[2025-05-09 11:41:20 KST] DEBUG: Executing SQL query: SELECT * FROM users WHERE id = 5
 [2025-05-09 11:41:20 KST] DEBUG: Query executed in 12ms, 1 row(s) returned.
-[2025-05-09 11:42:05 KST] DEBUG: Executing SQL query: INSERT INTO orders (user_id, order_date) VALUES (1, '2025-05-09')
 [2025-05-09 11:42:05 KST] DEBUG: Query executed in 8ms, 1 row(s) affected.
 [2025-05-09 11:56:10 KST] ERROR: Unhandled exception in module 'payment': TypeError: Cannot read property 'amount' of undefined
 [2025-05-09 11:56:10 KST] ERROR: Stack trace:
@@ -26,16 +24,15 @@ const logs = `
     at handleOrder (/app/controllers/order.js:40:5)
     ...
 [2025-05-09 11:57:00 KST] WARNING: Configuration file not found at /etc/app/config.json. Using default configuration.
-[2025-05-09 11:58:30 KST] CRITICAL: Security vulnerability detected: Potential SQL injection in user search.
 [2025-05-09 11:44:00 KST] ERROR: Database error: Connection timeout. Retrying... (Attempt 1/3)
 [2025-05-09 11:44:03 KST] INFO: Database connection re-established.
 `;
 
 const Admin: React.FC = () => {
   const initialState = {
-    keyword: 'ERROR',
+    keyword: '',
     filter: false,
-    highlight: true,
+    highlight: false,
   };
   const [searchData, setSearchData] = useState(initialState);
   const [draftsearchData, setDraftSearchData] = useState(initialState);
@@ -126,8 +123,9 @@ const Admin: React.FC = () => {
     if (socket) {
       await api.get('/api/test');
     } else {
-      const lines = logs.trim().split('\n');
-      lines.forEach((v) => setOutput((prev) => [...prev, v]));
+      setOutput([logs]);
+      // const lines = logs.trim().split('\n');
+      // lines.forEach((v) => setOutput((prev) => [...prev, v]));
     }
   };
 
@@ -159,9 +157,9 @@ const Admin: React.FC = () => {
 
       <Shell output={output} searchData={searchData} maxLines={200} autoScroll={autoScroll} />
 
-      <ShellForm onSubmit={handleSubmit}>
-        $<ShellInput type="text" value={input} onChange={(e) => setInput(e.target.value)} placeholder="node cli..." />
-      </ShellForm>
+      <SearchForm onSubmit={handleSubmit}>
+        $<SearchInput type="text" value={input} onChange={(e) => setInput(e.target.value)} placeholder="node cli..." />
+      </SearchForm>
       <AdminHelp />
     </>
   );
