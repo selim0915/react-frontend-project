@@ -1,11 +1,15 @@
-import React, { Fragment, useEffect, useMemo, useRef, useState } from 'react';
-import { ShellDiv, ShellLine, ShellWord } from '../pages/admin/admin.style';
+/* eslint-disable import/no-extraneous-dependencies */
+import { useVirtualizer } from '@tanstack/react-virtual';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { ShellRow, ShellWord, ShellWrap, VirtualizerList } from '../pages/admin/admin.style';
 
 interface ShellProps {
-  /** 출력할 로그 라인 배열 */
+  /** 출력할 로그 배열 */
   output: string[];
-  /** 화면에 표시할 최대 로그 라인 수 (기본값: 100) */
-  maxLines?: number;
+  /** 버퍼에 저장할 최대 로그 배열 크기 (기본값: 1000) */
+  maxRow?: number;
+  /** 뷰포트 안에 보이는 요소 외에 추가로 렌더링할 항목 수 (기본값: 5) */
+  overscan?: number;
   /** 검색 설정 */
   searchData?: {
     /** 검색 키워드 */
@@ -28,18 +32,33 @@ interface Log {
 export const trimAndLower = (str: string | undefined): string => str?.trim().toLowerCase() || '';
 
 // 최대 라인 수 초과 시 오래된 로그 제거하는 함수
-export const trimLogBuffer = <T,>(prev: T[], next: T[], maxLines: number): T[] => {
+export const trimLogBuffer = <T,>(prev: T[], next: T[], maxRow: number): T[] => {
   const combined = [...prev, ...next];
-  return combined.length > maxLines ? combined.slice(-maxLines) : combined;
+  return combined.length > maxRow ? combined.slice(-maxRow) : combined;
 };
 
-export const Shell: React.FC<ShellProps> = ({ output, searchData = {}, maxLines = 100, autoScroll = true }) => {
+// Shell Component
+export const Shell: React.FC<ShellProps> = ({
+  output,
+  maxRow = 1000,
+  overscan = 5,
+  searchData = {},
+  autoScroll = true,
+}) => {
   const outputRef = useRef<HTMLDivElement>(null);
   const [logBuffer, setLogBuffer] = useState<Log[]>([]);
-  const { keyword, filter, highlight } = searchData;
 
-  // 검색어 최적화
+  // 검색어 설정
+  const { keyword, filter, highlight } = searchData;
   const searchWord = useMemo(() => trimAndLower(keyword), [keyword]);
+
+  // 가상화 설정
+  const rowVirtualizer = useVirtualizer({
+    count: logBuffer.length,
+    getScrollElement: () => outputRef.current,
+    estimateSize: () => 30,
+    overscan,
+  });
 
   // 로그 수신시 버퍼 처리
   useEffect(() => {
@@ -53,58 +72,61 @@ export const Shell: React.FC<ShellProps> = ({ output, searchData = {}, maxLines 
         line,
       }));
 
-    setLogBuffer((prev) => trimLogBuffer<Log>(prev, newEntries, maxLines));
-  }, [output, maxLines]);
+    setLogBuffer((prev) => trimLogBuffer(prev, newEntries, maxRow));
+  }, [output, maxRow]);
 
   // 자동 스크롤
   useEffect(() => {
     if (autoScroll && outputRef.current) {
       outputRef.current.scrollTop = outputRef.current.scrollHeight;
     }
-  }, [autoScroll, logBuffer]);
+  }, [autoScroll, logBuffer, rowVirtualizer]);
 
   // 로그 출력
-  const renderedLogs = useMemo(() => {
-    console.log('start renderedLogs');
+  const renderedLogs = rowVirtualizer.getVirtualItems().map((virtualRow) => {
+    const log = logBuffer[virtualRow.index];
+    const { id, line } = log;
 
-    return logBuffer.map((log) => {
-      const { id, line } = log;
-      const lineLower = trimAndLower(line);
+    let content: React.ReactNode = line;
 
-      let content = line as React.ReactNode;
+    const lineLower = trimAndLower(line);
+    const keywordIndex = lineLower.indexOf(searchWord);
+    const isMatch = searchWord && keywordIndex !== -1;
 
-      if (searchWord && highlight) {
-        const keywordIndex = lineLower.indexOf(searchWord);
+    const isHidden = !isMatch && filter;
 
-        if (keywordIndex !== -1) {
-          const before = line.slice(0, keywordIndex);
-          const matched = line.slice(keywordIndex, keywordIndex + searchWord.length);
-          const after = line.slice(keywordIndex + searchWord.length);
-          const beforeLower = trimAndLower(before);
-          const matchedLower = trimAndLower(matched);
-          const afterLower = trimAndLower(after);
+    if (highlight && isMatch) {
+      const before = line.slice(0, keywordIndex);
+      const matched = line.slice(keywordIndex, keywordIndex + searchWord.length);
+      const after = line.slice(keywordIndex + searchWord.length);
 
-          content = (
-            <>
-              {before && <ShellWord data-word={beforeLower}>{before}</ShellWord>}
-              <ShellWord data-word={matchedLower} $keyword={searchWord} $highlight={highlight}>
-                {matched}
-              </ShellWord>
-              {after && <ShellWord data-word={afterLower}>{after}</ShellWord>}
-            </>
-          );
-        }
-      }
-
-      return (
-        <ShellLine key={id} data-word={lineLower} $keyword={searchWord} $filter={filter}>
-          {content}
-        </ShellLine>
+      content = (
+        <>
+          {before}
+          <ShellWord className="highlight">{matched}</ShellWord>
+          {after}
+        </>
       );
-    });
-  }, [logBuffer, searchWord, highlight, filter]);
+    }
 
-  return <ShellDiv ref={outputRef}>{renderedLogs}</ShellDiv>;
+    return (
+      <ShellRow
+        key={id}
+        ref={rowVirtualizer.measureElement}
+        data-index={virtualRow.index}
+        className={isHidden ? 'hidden' : undefined}
+        style={{ transform: `translateY(${virtualRow.start}px)` }}
+      >
+        {content}
+      </ShellRow>
+    );
+  });
+
+  return (
+    <ShellWrap ref={outputRef}>
+      <VirtualizerList height={`${rowVirtualizer.getTotalSize()}px`}>{renderedLogs}</VirtualizerList>
+    </ShellWrap>
+  );
 };
 
 export default Shell;

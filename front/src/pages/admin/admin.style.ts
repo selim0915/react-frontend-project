@@ -1,4 +1,4 @@
-import styled, { css } from 'styled-components';
+import styled from 'styled-components';
 
 export const SearchForm = styled.form`
   display: flex;
@@ -15,42 +15,38 @@ export const Searchbutton = styled.button`
   padding: 0 10px;
 `;
 
-interface ShellSearchProps {
-  'data-word'?: string;
-  $keyword?: string;
-  $filter?: boolean;
-  $highlight?: boolean;
-}
-export const ShellDiv = styled.div`
-  width: 50%;
-  height: 500px;
+export const ShellWrap = styled.div`
+  position: relative;
+  width: 700px;
+  height: 300px;
   border: 1px solid #000;
-  white-space: pre-wrap;
+  word-break: break-word;
+  white-space: normal;
   overflow: auto;
   resize: both;
 `;
-export const ShellLine = styled.div<ShellSearchProps>`
-  display: block;
-
-  ${(props) =>
-    props.$filter &&
-    props.$keyword &&
-    !props['data-word']?.includes(props.$keyword) &&
-    css`
-      display: none;
-    `}
+export const VirtualizerList = styled.div<{ height: string }>`
+  position: relative;
+  width: 100%;
+  height: ${(props) => props.height};
 `;
-export const ShellWord = styled.span<ShellSearchProps>`
+export const ShellRow = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+`;
+export const ShellWord = styled.span`
+  display: inline;
   font-weight: normal;
   background-color: unset;
 
-  ${(props) =>
-    props.$highlight &&
-    props.$keyword &&
-    props['data-word'] === props.$keyword &&
-    css`
-      font-weight: bold;
-      background-color: yellow;
-      color: black;
-    `}
+  &.hidden {
+    display: none;
+  }
+  &.highlight {
+    font-weight: bold;
+    background-color: yellow;
+    color: black;
+  }
 `;
