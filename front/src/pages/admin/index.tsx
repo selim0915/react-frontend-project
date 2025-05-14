@@ -17,7 +17,7 @@ const logs = `
 [2025-05-09 11:37:05 KST] INFO: Sent response: 400 Bad Request for /api/orders in 50ms
 [2025-05-09 11:37:05 KST] DEBUG: Response body: { "error": "Insufficient stock" }
 [2025-05-09 11:41:20 KST] DEBUG: Query executed in 12ms, 1 row(s) returned.
-[2025-05-09 11:42:05 KST] DEBUG: Query executed in 8ms, 1 row(s) affected.
+[2025-05-09 11:42:05 KST] DEBUG: LoremipsumdolorsitametconsecteturadipiscingelitSeddoeiusmodtemporincididuntutlaboreetdoloremagnaaliquaUtenimadminimveniamquisnostrudexercitationullamcolaborisnisiutaliquipexeacommodoconsequatDuisauteruredolorinreprehenderitinvoluptatevelitesseccillumdoloreeufugiatnullapariaturExcepteursintoccaecatcupidatatnonproidentSuntinculpaquiofficiadeseruntmollitanimidestlaborumLoremipsumdolorsitametconsecteturadipiscingelitSeddoeiusmodtemporincididuntutlaboreetdoloremagnaaliquaUtenimadminimveniamquisnostrudexercitationullamcolaborisnisiutaliquipexeacommodoconsequatDuisauteruredolorinreprehenderitinvoluptatevelitesseccillumdoloreeufugiatnullapariaturExcepteursintoccaecatcupidatatnonproidentSuntinculpaquiofficiadeseruntmollitanimidestlaborumLoremipsumdolorsitametconsecteturadipiscingelitSeddoeiusmodtemporincididuntutlaboreetdoloremagnaaliquaUtenimadminimveniamquisnostrudexercitationullamcolaborisnisiutaliqui
 [2025-05-09 11:56:10 KST] ERROR: Unhandled exception in module 'payment': TypeError: Cannot read property 'amount' of undefined
 [2025-05-09 11:56:10 KST] ERROR: Stack trace:
     at processPayment (/app/modules/payment.js:25:12)
@@ -75,11 +75,6 @@ const Admin: React.FC = () => {
     }
   };
 
-  const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setSearchData(draftsearchData);
-  };
-
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -95,6 +90,11 @@ const Admin: React.FC = () => {
 
     socket.send(input);
     setInput('');
+  };
+
+  const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setSearchData(draftsearchData);
   };
 
   const handleToggleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -124,24 +124,12 @@ const Admin: React.FC = () => {
       await api.get('/api/test');
     } else {
       setOutput([logs]);
-      // const lines = logs.trim().split('\n');
-      // lines.forEach((v) => setOutput((prev) => [...prev, v]));
     }
   };
 
   return (
     <>
-      <>
-        <SearchLabel htmlFor="socket">웹소켓 {socket ? 'On' : 'Off'}</SearchLabel>
-        <SearchInput type="checkbox" id="socket" checked={!!socket} onChange={handleToggleChange} />
-
-        <SearchLabel htmlFor="autoScroll">자동스크롤</SearchLabel>
-        <SearchInput type="checkbox" id="autoScroll" checked={autoScroll} onChange={handleChange} />
-      </>
-      <Searchbutton type="button" onClick={handleLogRequest}>
-        Add logs
-      </Searchbutton>
-
+      {/* 검색 옵션 */}
       <SearchForm onSubmit={handleSearch}>
         <SearchLabel htmlFor="keyword">키워드</SearchLabel>
         <SearchInput type="text" id="keyword" value={draftsearchData.keyword} onChange={handleChange} />
@@ -153,13 +141,24 @@ const Admin: React.FC = () => {
         <SearchInput type="checkbox" id="filter" checked={draftsearchData.filter} onChange={handleChange} />
 
         <Searchbutton type="submit">검색</Searchbutton>
+
+        <SearchLabel htmlFor="autoScroll">자동스크롤</SearchLabel>
+        <SearchInput type="checkbox" id="autoScroll" checked={autoScroll} onChange={handleChange} />
       </SearchForm>
 
-      <Shell output={output} searchData={searchData} maxLines={200} autoScroll={autoScroll} />
+      <Shell output={output} maxRow={50} overscan={3} searchData={searchData} autoScroll={autoScroll} />
 
+      {/* 로그 생성 */}
       <SearchForm onSubmit={handleSubmit}>
         $<SearchInput type="text" value={input} onChange={(e) => setInput(e.target.value)} placeholder="node cli..." />
+        <SearchLabel htmlFor="socket">웹소켓 {socket ? 'On' : 'Off'}</SearchLabel>
+        <SearchInput type="checkbox" id="socket" checked={!!socket} onChange={handleToggleChange} />
+        <Searchbutton type="button" onClick={handleLogRequest}>
+          Add logs
+        </Searchbutton>
       </SearchForm>
+
+      {/* 기타 */}
       <AdminHelp />
     </>
   );
