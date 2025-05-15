@@ -15,10 +15,11 @@ export const Searchbutton = styled.button`
   padding: 0 10px;
 `;
 
+// Shell Component style
 export const ShellWrap = styled.div`
   position: relative;
   width: 700px;
-  height: 300px;
+  height: 200px;
   border: 1px solid #000;
   word-break: break-word;
   white-space: normal;
@@ -34,16 +35,12 @@ export const ShellRow = styled.div`
   position: absolute;
   top: 0;
   left: 0;
-  width: 100%;
 `;
 export const ShellWord = styled.span`
   display: inline;
   font-weight: normal;
   background-color: unset;
 
-  &.hidden {
-    display: none;
-  }
   &.highlight {
     font-weight: bold;
     background-color: yellow;
