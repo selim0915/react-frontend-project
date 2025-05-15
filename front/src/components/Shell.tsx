@@ -1,4 +1,3 @@
-/* eslint-disable import/no-extraneous-dependencies */
 import { useVirtualizer } from '@tanstack/react-virtual';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { ShellRow, ShellWord, ShellWrap, VirtualizerList } from '../pages/admin/admin.style';
@@ -23,11 +22,6 @@ interface ShellProps {
   autoScroll?: boolean;
 }
 
-interface Log {
-  id: string;
-  line: string;
-}
-
 // 문자열을 소문자로 변환하고 공백 제거하는 함수
 export const trimAndLower = (str: string | undefined): string => str?.trim().toLowerCase() || '';
 
@@ -37,84 +31,88 @@ export const trimLogBuffer = <T,>(prev: T[], next: T[], maxRow: number): T[] => 
   return combined.length > maxRow ? combined.slice(-maxRow) : combined;
 };
 
+// 검색어 위치 확인하는 함수
+export const getMatchedIndex = (line: string, word: string): number => trimAndLower(line).indexOf(word);
+
 // Shell Component
-export const Shell: React.FC<ShellProps> = ({
-  output,
-  maxRow = 1000,
-  overscan = 5,
-  searchData = {},
-  autoScroll = true,
-}) => {
+export const Shell: React.FC<ShellProps> = ({ output, maxRow = 1000, overscan = 5, searchData, autoScroll = true }) => {
   const outputRef = useRef<HTMLDivElement>(null);
-  const [logBuffer, setLogBuffer] = useState<Log[]>([]);
+  const [logBuffer, setLogBuffer] = useState<string[]>([]);
 
   // 검색어 설정
-  const { keyword, filter, highlight } = searchData;
+  const { keyword = '', filter = false, highlight = false } = searchData || {};
   const searchWord = useMemo(() => trimAndLower(keyword), [keyword]);
-
-  // 가상화 설정
-  const rowVirtualizer = useVirtualizer({
-    count: logBuffer.length,
-    getScrollElement: () => outputRef.current,
-    estimateSize: () => 30,
-    overscan,
-  });
 
   // 로그 수신시 버퍼 처리
   useEffect(() => {
-    const timestamp = Date.now();
-
-    const newEntries = output
-      .flatMap((chunk) => chunk.split('\n'))
-      .filter((line) => line.trim() !== '')
-      .map((line, i) => ({
-        id: `line-${timestamp}-${i}`,
-        line,
-      }));
+    const newEntries = output.flatMap((chunk) => chunk.split('\n')).filter((line) => line.trim() !== '');
 
     setLogBuffer((prev) => trimLogBuffer(prev, newEntries, maxRow));
   }, [output, maxRow]);
 
+  // 검색어 필터링 처리
+  const filteredLogs = useMemo(() => {
+    if (!filter || !searchWord) return logBuffer;
+
+    return logBuffer.filter((line) => getMatchedIndex(line, searchWord) !== -1);
+  }, [logBuffer, searchWord, filter]);
+
+  // 가상 스크롤 설정
+  const rowVirtualizer = useVirtualizer({
+    count: filteredLogs.length,
+    getScrollElement: () => outputRef.current,
+    estimateSize: () => 20,
+    overscan,
+  });
+
   // 자동 스크롤
   useEffect(() => {
-    if (autoScroll && outputRef.current) {
-      outputRef.current.scrollTop = outputRef.current.scrollHeight;
-    }
-  }, [autoScroll, logBuffer, rowVirtualizer]);
+    requestAnimationFrame(() => {
+      if (!autoScroll || filteredLogs.length === 0) return;
 
-  // 로그 출력
+      const lastIndex = filteredLogs.length - 1;
+      if (autoScroll && outputRef.current) {
+        rowVirtualizer.scrollToIndex(lastIndex, { align: 'end' });
+      }
+    });
+  }, [autoScroll, filteredLogs, rowVirtualizer]);
+
+  // 단어 내부 하이라이팅
+  const getHighlightedContent = (line: string, word: string): React.ReactNode => {
+    const keywordIndex = getMatchedIndex(line, word);
+
+    if (keywordIndex === -1) return line;
+
+    const before = line.slice(0, keywordIndex);
+    const matched = line.slice(keywordIndex, keywordIndex + word.length);
+    const after = line.slice(keywordIndex + word.length);
+
+    return (
+      <>
+        {before}
+        <ShellWord className="highlight">{matched}</ShellWord>
+        {after}
+      </>
+    );
+  };
+
+  // 로그 뷰어 출력
   const renderedLogs = rowVirtualizer.getVirtualItems().map((virtualRow) => {
-    const log = logBuffer[virtualRow.index];
-    const { id, line } = log;
+    const log = filteredLogs[virtualRow.index];
 
-    let content: React.ReactNode = line;
+    let content: React.ReactNode = log;
 
-    const lineLower = trimAndLower(line);
-    const keywordIndex = lineLower.indexOf(searchWord);
-    const isMatch = searchWord && keywordIndex !== -1;
-
-    const isHidden = !isMatch && filter;
-
-    if (highlight && isMatch) {
-      const before = line.slice(0, keywordIndex);
-      const matched = line.slice(keywordIndex, keywordIndex + searchWord.length);
-      const after = line.slice(keywordIndex + searchWord.length);
-
-      content = (
-        <>
-          {before}
-          <ShellWord className="highlight">{matched}</ShellWord>
-          {after}
-        </>
-      );
+    if (searchWord) {
+      if (searchWord && highlight) {
+        content = getHighlightedContent(log, searchWord);
+      }
     }
 
     return (
       <ShellRow
-        key={id}
+        key={virtualRow.index}
         ref={rowVirtualizer.measureElement}
         data-index={virtualRow.index}
-        className={isHidden ? 'hidden' : undefined}
         style={{ transform: `translateY(${virtualRow.start}px)` }}
       >
         {content}
