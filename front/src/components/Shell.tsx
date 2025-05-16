@@ -50,16 +50,9 @@ export const Shell: React.FC<ShellProps> = ({ output, maxRow = 1000, overscan = 
     setLogBuffer((prev) => trimLogBuffer(prev, newEntries, maxRow));
   }, [output, maxRow]);
 
-  // 검색어 필터링 처리
-  const filteredLogs = useMemo(() => {
-    if (!filter || !searchWord) return logBuffer;
-
-    return logBuffer.filter((line) => getMatchedIndex(line, searchWord) !== -1);
-  }, [logBuffer, searchWord, filter]);
-
   // 가상 스크롤 설정
   const rowVirtualizer = useVirtualizer({
-    count: filteredLogs.length,
+    count: logBuffer.length,
     getScrollElement: () => outputRef.current,
     estimateSize: () => 20,
     overscan,
@@ -67,30 +60,24 @@ export const Shell: React.FC<ShellProps> = ({ output, maxRow = 1000, overscan = 
 
   // 자동 스크롤
   useEffect(() => {
-    requestAnimationFrame(() => {
-      if (!autoScroll || filteredLogs.length === 0) return;
+    if (!autoScroll || !outputRef.current || logBuffer.length === 0) return;
+    const lastIndex = logBuffer.length - 1;
 
-      const lastIndex = filteredLogs.length - 1;
-      if (autoScroll && outputRef.current) {
-        rowVirtualizer.scrollToIndex(lastIndex, { align: 'end' });
-      }
+    requestAnimationFrame(() => {
+      rowVirtualizer.scrollToIndex(lastIndex, { align: 'end' });
     });
-  }, [autoScroll, filteredLogs, rowVirtualizer]);
+  }, [autoScroll, logBuffer.length, rowVirtualizer]);
 
   // 단어 내부 하이라이팅
-  const getHighlightedContent = (line: string, word: string): React.ReactNode => {
-    const keywordIndex = getMatchedIndex(line, word);
-
-    if (keywordIndex === -1) return line;
-
-    const before = line.slice(0, keywordIndex);
-    const matched = line.slice(keywordIndex, keywordIndex + word.length);
-    const after = line.slice(keywordIndex + word.length);
+  const getHighlightedContent = (row: string, word: string, matchIndex: number): React.ReactNode => {
+    const before = row.slice(0, matchIndex);
+    const matched = row.slice(matchIndex, matchIndex + word.length);
+    const after = row.slice(matchIndex + word.length);
 
     return (
       <>
         {before}
-        <ShellWord className="highlight">{matched}</ShellWord>
+        <ShellWord className="matched">{matched}</ShellWord>
         {after}
       </>
     );
@@ -98,13 +85,19 @@ export const Shell: React.FC<ShellProps> = ({ output, maxRow = 1000, overscan = 
 
   // 로그 뷰어 출력
   const renderedLogs = rowVirtualizer.getVirtualItems().map((virtualRow) => {
-    const log = filteredLogs[virtualRow.index];
+    const log = logBuffer[virtualRow.index];
 
+    let className = '';
     let content: React.ReactNode = log;
 
     if (searchWord) {
-      if (searchWord && highlight) {
-        content = getHighlightedContent(log, searchWord);
+      const keywordIndex = getMatchedIndex(log, searchWord);
+
+      if (filter && keywordIndex === -1) {
+        className = 'hidden';
+      } else if (highlight && keywordIndex !== -1) {
+        className = 'highlight';
+        content = getHighlightedContent(log, searchWord, keywordIndex);
       }
     }
 
@@ -113,6 +106,7 @@ export const Shell: React.FC<ShellProps> = ({ output, maxRow = 1000, overscan = 
         key={virtualRow.index}
         ref={rowVirtualizer.measureElement}
         data-index={virtualRow.index}
+        className={className}
         style={{ transform: `translateY(${virtualRow.start}px)` }}
       >
         {content}

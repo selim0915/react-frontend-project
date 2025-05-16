@@ -144,7 +144,7 @@ const Admin: React.FC = () => {
         <SearchInput type="checkbox" id="autoScroll" checked={autoScroll} onChange={handleChange} />
       </SearchForm>
 
-      <Shell output={output} maxRow={50000} overscan={3} searchData={searchData} autoScroll={autoScroll} />
+      <Shell output={output} maxRow={50000} searchData={searchData} autoScroll={autoScroll} />
 
       {/* 로그 생성 */}
       <SearchForm onSubmit={handleSubmit}>

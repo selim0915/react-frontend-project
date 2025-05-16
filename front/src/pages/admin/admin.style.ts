@@ -35,15 +35,20 @@ export const ShellRow = styled.div`
   position: absolute;
   top: 0;
   left: 0;
-`;
-export const ShellWord = styled.span`
-  display: inline;
-  font-weight: normal;
-  background-color: unset;
+
+  &.hidden {
+    visibility: hidden;
+  }
 
   &.highlight {
-    font-weight: bold;
-    background-color: yellow;
-    color: black;
+    font-weight: normal;
+    background-color: unset;
+
+    .matched {
+      font-weight: bold;
+      background-color: yellow;
+      color: black;
+    }
   }
 `;
+export const ShellWord = styled.span``;
