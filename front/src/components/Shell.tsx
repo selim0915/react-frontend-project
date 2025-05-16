@@ -87,16 +87,16 @@ export const Shell: React.FC<ShellProps> = ({ output, maxRow = 1000, overscan = 
   const renderedLogs = rowVirtualizer.getVirtualItems().map((virtualRow) => {
     const log = logBuffer[virtualRow.index];
 
-    let className = '';
+    let className = ['log-show'];
     let content: React.ReactNode = log;
 
     if (searchWord) {
       const keywordIndex = getMatchedIndex(log, searchWord);
 
       if (filter && keywordIndex === -1) {
-        className = 'hidden';
+        className = ['log-hidden'];
       } else if (highlight && keywordIndex !== -1) {
-        className = 'highlight';
+        className.push('log-highlight');
         content = getHighlightedContent(log, searchWord, keywordIndex);
       }
     }
@@ -106,7 +106,7 @@ export const Shell: React.FC<ShellProps> = ({ output, maxRow = 1000, overscan = 
         key={virtualRow.index}
         ref={rowVirtualizer.measureElement}
         data-index={virtualRow.index}
-        className={className}
+        className={className.join(' ')}
         style={{ transform: `translateY(${virtualRow.start}px)` }}
       >
         {content}
