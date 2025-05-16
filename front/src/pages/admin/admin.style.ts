@@ -36,11 +36,14 @@ export const ShellRow = styled.div`
   top: 0;
   left: 0;
 
-  &.hidden {
+  &.log-show {
+    visibility: visible;
+  }
+  &.log-hidden {
     visibility: hidden;
   }
 
-  &.highlight {
+  &.log-highlight {
     font-weight: normal;
     background-color: unset;
 
