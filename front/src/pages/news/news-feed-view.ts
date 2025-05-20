@@ -1,8 +1,7 @@
 /* eslint-disable no-restricted-globals */
-import { NEWS_URL } from '../../config';
 import { NewsFeedApi } from '../../core/api';
 import View from '../../core/view';
-import { NewsFeed, NewsStore } from '../../types';
+import { NewsStore } from '../../types';
 
 const template = `
     <div class="bg-gray-600 min-h-screen">
@@ -23,7 +22,6 @@ const template = `
           </div> 
         </div>
       </div>
-      <div class="px-4 pt-4 text-white">{{__total_news_feed__}}</div>
       <div class="px-4 text-2xl text-gray-700">
         {{__news_feed__}}        
       </div>
@@ -39,22 +37,16 @@ export default class NewsFeedView extends View {
     super(containerId, template);
 
     this.store = store;
-    this.api = new NewsFeedApi(NEWS_URL);
+    this.api = new NewsFeedApi();
   }
 
-  render(): void {
-    this.store.currentPage = Number(location.hash.substr(7) || 1);
+  render = async (page: string = '1'): Promise<void> => {
+    this.store.currentPage = Number(page);
 
     if (!this.store.hasFeeds) {
-      this.api.getDataWithPromise((feeds: NewsFeed[]) => {
-        this.store.setFeeds(feeds);
-        this.renderView();
-      });
+      this.store.setFeeds(await this.api.getData());
     }
-    this.renderView();
-  }
 
-  renderView = () => {
     for (let i = (this.store.currentPage - 1) * 10; i < this.store.currentPage * 10; i += 1) {
       const { read, id, title, comments_count: commentsCount, user, points, time_ago: timeAgo } = this.store.getFeed(i);
 

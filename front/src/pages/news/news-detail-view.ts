@@ -1,8 +1,7 @@
 /* eslint-disable no-restricted-globals */
-import { CONTENT_URL } from '../../config';
 import { NewsDetailApi } from '../../core/api';
 import View from '../../core/view';
-import { NewsComment, NewsDetail, NewsStore } from '../../types';
+import { NewsComment, NewsStore } from '../../types';
 
 const template = `
     <div class="bg-gray-600 min-h-screen pb-8">
@@ -42,21 +41,21 @@ export default class NewsDetailView extends View {
     this.store = store;
   }
 
-  render() {
-    const id = location.hash.substr(7);
-    const api = new NewsDetailApi(CONTENT_URL.replace('@id', id));
-    api.getDataWithPromise((data: NewsDetail) => {
-      this.store.makeRead(Number(id));
-      this.setTemplateData('comments', this.makeComment(data.comments));
-      this.setTemplateData('currentPage', String(this.store.currentPage));
-      this.setTemplateData('title', String(data.title));
-      this.setTemplateData('content', String(data.content));
+  render = async (id: string): Promise<void> => {
+    const api = new NewsDetailApi(id);
 
-      this.updateView();
-    });
-  }
+    const { title, content, comments } = await api.getData();
 
-  makeComment(comments: NewsComment[]): string {
+    this.store.makeRead(Number(id));
+    this.setTemplateData('comments', this.makeComment(comments));
+    this.setTemplateData('currentPage', String(this.store.currentPage));
+    this.setTemplateData('title', String(title));
+    this.setTemplateData('content', String(content));
+
+    this.updateView();
+  };
+
+  private makeComment(comments: NewsComment[]): string {
     for (let i = 0; i < comments.length; i += 1) {
       const comment: NewsComment = comments[i];
 

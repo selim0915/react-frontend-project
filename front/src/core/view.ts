@@ -8,13 +8,13 @@ export default abstract class View {
   private htmlList: string[];
 
   constructor(containerId: string, template: string) {
-    const containerElement = document.getElementById(containerId);
+    const conatinerElement: HTMLElement | null = document.getElementById(containerId);
 
-    if (!containerElement) {
+    if (!conatinerElement) {
       throw new Error('No containerElement');
     }
 
-    this.container = containerElement;
+    this.container = conatinerElement;
     this.template = template;
     this.renderTemplate = template;
     this.htmlList = [];
@@ -43,5 +43,5 @@ export default abstract class View {
     this.htmlList = [];
   }
 
-  abstract render(): void;
+  abstract render(...params: string[]): void;
 }
