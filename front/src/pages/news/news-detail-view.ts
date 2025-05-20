@@ -1,11 +1,10 @@
 /* eslint-disable no-restricted-globals */
+import { CONTENT_URL } from '../../config';
 import { NewsDetailApi } from '../../core/api';
 import View from '../../core/view';
-import { NewsComment, NewsDetail } from '../../types';
+import { NewsComment, NewsDetail, NewsStore } from '../../types';
 
-export default class NewsDetailView extends View {
-  constructor(containerId: string) {
-    const template = `
+const template = `
     <div class="bg-gray-600 min-h-screen pb-8">
       <div class="bg-white text-xl">
         <div class="mx-auto px-4">
@@ -33,23 +32,24 @@ export default class NewsDetailView extends View {
       </div>
     </div>
   `;
+
+export default class NewsDetailView extends View {
+  private store: NewsStore;
+
+  constructor(containerId: string, store: NewsStore) {
     super(containerId, template);
+
+    this.store = store;
   }
 
   render() {
     const id = location.hash.substr(7);
-    const api = new NewsDetailApi();
+    const api = new NewsDetailApi(CONTENT_URL.replace('@id', id));
     const newsContent: NewsDetail = api.getData(id);
 
-    for (let i = 0; i < window.store.feeds.length; i += 1) {
-      if (window.store.feeds[i].id === Number(id)) {
-        window.store.feeds[i].read = true;
-        break;
-      }
-    }
-
+    this.store.makeRead(Number(id));
     this.setTemplateData('comments', this.makeComment(newsContent.comments));
-    this.setTemplateData('currentPage', String(window.store.currentPage));
+    this.setTemplateData('currentPage', String(this.store.currentPage));
     this.setTemplateData('title', String(newsContent.title));
     this.setTemplateData('content', String(newsContent.content));
 

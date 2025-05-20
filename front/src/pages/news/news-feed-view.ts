@@ -1,15 +1,10 @@
 /* eslint-disable no-restricted-globals */
+import { NEWS_URL } from '../../config';
 import { NewsFeedApi } from '../../core/api';
 import View from '../../core/view';
-import { NewsFeed } from '../../types';
+import { NewsStore } from '../../types';
 
-export default class NewsFeedView extends View {
-  api: NewsFeedApi;
-
-  feeds: NewsFeed[];
-
-  constructor(containerId: string) {
-    const template = `
+const template = `
     <div class="bg-gray-600 min-h-screen">
       <div class="bg-white text-xl">
         <div class="mx-auto px-4">
@@ -34,34 +29,29 @@ export default class NewsFeedView extends View {
       </div>
     </div>
   `;
+
+export default class NewsFeedView extends View {
+  private api: NewsFeedApi;
+
+  private store: NewsStore;
+
+  constructor(containerId: string, store: NewsStore) {
     super(containerId, template);
 
-    this.api = new NewsFeedApi();
-    this.feeds = window.store.feeds;
+    this.store = store;
+    this.api = new NewsFeedApi(NEWS_URL);
 
-    if (this.feeds.length === 0) {
-      const makeNewsFeed = this.api.getData();
-      window.store.feeds = makeNewsFeed;
-      this.feeds = makeNewsFeed;
-
-      this.makeFeeds();
+    if (!this.store.hasFeeds) {
+      this.store.setFeeds(this.api.getData());
     }
   }
 
-  makeFeeds(): void {
-    this.feeds.map((feed) => ({
-      ...feed,
-      read: false,
-    }));
-  }
-
   render(): void {
-    window.store.currentPage = Number(location.hash.substr(7) || 1);
+    this.store.currentPage = Number(location.hash.substr(7) || 1);
 
-    for (let i = (window.store.currentPage - 1) * 10; i < window.store.currentPage * 10; i += 1) {
-      if (!this.feeds[i]) break;
+    for (let i = (this.store.currentPage - 1) * 10; i < this.store.currentPage * 10; i += 1) {
+      const { read, id, title, comments_count: commentsCount, user, points, time_ago: timeAgo } = this.store.getFeed(i);
 
-      const { read, id, title, comments_count: commentsCount, user, points, time_ago: timeAgo } = this.feeds[i];
       this.addHtml(`
       <div class="p-6 ${
         read ? 'bg-red-500' : 'bg-white'
@@ -84,15 +74,10 @@ export default class NewsFeedView extends View {
       </div>    
     `);
     }
-    const totalPages = Math.ceil(this.feeds.length / 10);
 
     this.setTemplateData('news_feed', this.getHtml());
-    this.setTemplateData('total_news_feed', `${window.store.currentPage} / ${totalPages}`);
-    this.setTemplateData('prev_page', String(window.store.currentPage > 1 ? window.store.currentPage - 1 : 1));
-    this.setTemplateData(
-      'next_page',
-      String(window.store.currentPage < totalPages ? window.store.currentPage + 1 : window.store.currentPage),
-    );
+    this.setTemplateData('prev_page', String(this.store.prevPage));
+    this.setTemplateData('next_page', String(this.store.nextPage));
 
     this.updateView();
   }
