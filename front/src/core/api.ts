@@ -1,34 +1,61 @@
+/* eslint-disable no-useless-constructor */
 /* eslint-disable class-methods-use-this */
 /* eslint-disable max-classes-per-file */
-import { CONTENT_URL, NEWS_URL } from '../config';
 import { NewsDetail, NewsFeed } from '../types';
 
 export default class Api {
   url: string;
 
-  ajax: XMLHttpRequest;
+  xhr: XMLHttpRequest;
 
   constructor(url: string) {
+    this.xhr = new XMLHttpRequest();
     this.url = url;
-    this.ajax = new XMLHttpRequest();
   }
 
-  getRequest<AjaxResponse>(url: string): AjaxResponse {
-    const ajax = new XMLHttpRequest();
-    ajax.open('GET', url, false);
-    ajax.send();
-    return JSON.parse(ajax.response);
+  getRequestWithXHR<AjaxResponse>(cb: (data: AjaxResponse) => void): void {
+    this.xhr.open('GET', this.url);
+    this.xhr.addEventListener('load', () => {
+      cb(JSON.parse(this.xhr.response) as AjaxResponse);
+    });
+
+    this.xhr.send();
+  }
+
+  getRequestWithPromise<AjaxResponse>(cb: (data: AjaxResponse) => void): void {
+    fetch(this.url)
+      .then((response) => response.json())
+      .then(cb)
+      .catch(() => {
+        console.error('데이타를 불러오지 못했습니다.');
+      });
   }
 }
 
 export class NewsFeedApi extends Api {
-  getData(): NewsFeed[] {
-    return this.getRequest<NewsFeed[]>(NEWS_URL);
+  constructor(url: string) {
+    super(url);
+  }
+
+  getDataWithXHR(cb: (data: NewsFeed[]) => void): void {
+    return this.getRequestWithXHR<NewsFeed[]>(cb);
+  }
+
+  getDataWithPromise(cb: (data: NewsFeed[]) => void): void {
+    return this.getRequestWithPromise<NewsFeed[]>(cb);
   }
 }
 
 export class NewsDetailApi extends Api {
-  getData(id: string): NewsDetail {
-    return this.getRequest<NewsDetail>(CONTENT_URL.replace('@id', id));
+  constructor(url: string) {
+    super(url);
+  }
+
+  getDataWithXHR(cb: (data: NewsDetail) => void): void {
+    return this.getRequestWithXHR<NewsDetail>(cb);
+  }
+
+  getDataWithPromise(cb: (data: NewsDetail) => void): void {
+    return this.getRequestWithPromise<NewsDetail>(cb);
   }
 }
