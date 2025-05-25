@@ -14,7 +14,8 @@
     "dev": "cross-env NODE_ENV=development webpack serve --config ./webpack.config.js",
     "local": "cross-env NODE_ENV=development node ./server/server.js",
     "prod": "npm run build && cross-env NODE_ENV=production node ./server/server.js",
-    "parcel": "parcel ./front/public/index.html"
+    "parcel": "parcel ./front/public/index.html",
+    "jsdoc": "jsdoc -c jsdoc.config.json ."
   },
   "engines": {
     "node": "18.19.0"
@@ -33,6 +34,7 @@
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
     "iconv-lite": "^0.6.3",
+    "jsdoc": "^4.0.4",
     "mongoose": "^8.0.3",
     "morgan": "^1.10.0",
     "parcel": "^2.14.4",

@@ -4,3 +4,4 @@ dist/
 logs/
 .eslintcache
 .parcel-cache/
+out/
