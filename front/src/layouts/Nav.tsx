@@ -15,9 +15,14 @@ const Nav: React.FC<NavProp> = ({ isLoggedIn }) => (
         <StyledNavItemIink href="/chat">채팅창</StyledNavItemIink>
       </StyledNavItem>
       {isLoggedIn && (
-        <StyledNavItem>
-          <StyledNavItemIink href="/admin">관리자</StyledNavItemIink>
-        </StyledNavItem>
+        <>
+          <StyledNavItem>
+            <StyledNavItemIink href="/mypage/schedule">mypage</StyledNavItemIink>
+          </StyledNavItem>
+          <StyledNavItem>
+            <StyledNavItemIink href="/admin">관리자</StyledNavItemIink>
+          </StyledNavItem>
+        </>
       )}
     </StyledNavItemWrap>
   </StyledNav>

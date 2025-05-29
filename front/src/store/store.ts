@@ -1,5 +1,5 @@
 /* eslint-disable no-shadow */
-import { NewsFeed, NewsStore } from './types';
+import { NewsFeed, NewsStore } from '../types';
 
 export default class Store implements NewsStore {
   public feeds: NewsFeed[];

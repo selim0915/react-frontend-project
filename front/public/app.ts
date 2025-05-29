@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import Router from '../src/core/router';
 import { NewsDetailView, NewsFeedView } from '../src/pages';
-import Store from '../src/store';
+import Store from '../src/store/store';
 
 const store = new Store();
 
