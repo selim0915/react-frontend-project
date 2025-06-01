@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import api from '../../apis/api.instance';
-import { ProductType } from '../../types/types';
+import { ProductType } from '../../types/core.type';
 
 const Board: React.FC = () => {
   const [productList, setProductList] = useState<ProductType[]>([]);

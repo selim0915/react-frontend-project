@@ -4,8 +4,8 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { useNewsStore } from '../..';
-import { NewsFeedApi } from '../../core/api';
-import { NewsFeed } from '../../types';
+import { NewsFeedApi } from '../../apis/newFeed.api';
+import { NewsFeed } from '../../types/newFeed.type';
 
 export const NewsFeedView: React.FC = () => {
   const store = useNewsStore();

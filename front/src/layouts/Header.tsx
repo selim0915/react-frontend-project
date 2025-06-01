@@ -14,14 +14,14 @@ const Header: React.FC<HeaderProp> = ({ isLoggedIn }) => {
 
   return (
     <StyledHeader>
-      <StyledHeaderLogo href="/login">{WordKey.PROJECT_NAME}</StyledHeaderLogo>
+      <StyledHeaderLogo href="/">{WordKey.PROJECT_NAME}</StyledHeaderLogo>
       <StyledHeaderItemWrap>
         {isLoggedIn ? (
           <>
             <StyledDiv>{localStorage.getItem('id')}님</StyledDiv>
             <StyledA onClick={logout}>로그아웃</StyledA>
           </>
-        ) : null}
+        ) : <StyledA href="/login">로그인</StyledA>}
       </StyledHeaderItemWrap>
     </StyledHeader>
   );

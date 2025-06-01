@@ -3,8 +3,8 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { useNewsStore } from '../..';
-import { NewsDetailApi } from '../../core/api';
-import { NewsComment } from '../../types';
+import { NewsDetailApi } from '../../apis/newFeed.api';
+import { NewsComment } from '../../types/newFeed.type';
 
 const Comment: React.FC<{ comment: NewsComment }> = ({ comment }) => (
   <>

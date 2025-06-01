@@ -1,19 +1,3 @@
-/* eslint-disable no-use-before-define */
-import View from '../core/view';
-
-export interface NewsStore {
-  feeds: NewsFeed[];
-  getAllFeeds: () => NewsFeed[];
-  getFeed: (position: number) => NewsFeed;
-  setFeeds: (feeds: NewsFeed[]) => void;
-  makeRead: (id: number) => void;
-  hasFeeds: boolean;
-  currentPage: number;
-  numberOfFeed: number;
-  nextPage: number;
-  prevPage: number;
-}
-
 export interface News {
   readonly id: number;
   readonly time_ago: string;
@@ -38,12 +22,20 @@ export interface NewsDetail extends News {
   readonly comments: NewsComment[];
 }
 
+export interface NewsStore {
+  feeds: NewsFeed[];
+  getAllFeeds: () => NewsFeed[];
+  getFeed: (position: number) => NewsFeed;
+  setFeeds: (feeds: NewsFeed[]) => void;
+  makeRead: (id: number) => void;
+  hasFeeds: boolean;
+  currentPage: number;
+  numberOfFeed: number;
+  nextPage: number;
+  prevPage: number;
+}
+
 export interface Store {
   currentPage: number;
   feeds: NewsFeed[];
-}
-
-export interface RouteInfo {
-  path: string;
-  page: View;
 }

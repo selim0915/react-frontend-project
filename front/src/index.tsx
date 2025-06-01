@@ -5,7 +5,7 @@ import { createRoot } from 'react-dom/client';
 import App from './app';
 import Store from './store/store';
 import GlobalStyle from './styles/global.style';
-import { NewsStore } from './types';
+import { NewsStore } from './types/newFeed.type';
 
 const NewsStoreContext = createContext<NewsStore | undefined>(undefined);
 
