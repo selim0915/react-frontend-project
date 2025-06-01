@@ -1,6 +1,6 @@
 /* eslint-disable max-classes-per-file */
 /* eslint-disable no-undef */
-import { CONTENT_URL, NEWS_URL } from '../apis/config';
+import { CONTENT_URL, NEWS_URL } from '../apis/api';
 import { NewsDetail, NewsFeed } from '../types';
 
 export default class Api {

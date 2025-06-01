@@ -14,6 +14,9 @@ const Nav: React.FC<NavProp> = ({ isLoggedIn }) => (
       <StyledNavItem>
         <StyledNavItemIink href="/chat">채팅창</StyledNavItemIink>
       </StyledNavItem>
+      <StyledNavItem>
+        <StyledNavItemIink href="/page/1">newsFeed</StyledNavItemIink>
+      </StyledNavItem>
       {isLoggedIn && (
         <>
           <StyledNavItem>

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import api from '../../apis/api';
+import api from '../../apis/api.instance';
 import Shell from '../../components/Shell';
 import { Searchbutton, SearchForm, SearchInput, SearchLabel } from './admin.style';
 import AdminHelp from './adminHelp';

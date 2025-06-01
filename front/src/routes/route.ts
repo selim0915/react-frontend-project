@@ -3,6 +3,8 @@ import Board from '../pages/board';
 import Chat from '../pages/chat';
 import Login from '../pages/login';
 import Main from '../pages/main';
+import NewsDetailView from '../pages/news/NewsDetailView';
+import NewsFeedView from '../pages/news/NewsFeedView';
 import Schedule from '../pages/schedule';
 import { RouteType } from '../types/types';
 
@@ -30,6 +32,16 @@ export const routeConfig: RouteType[] = [
   {
     path: '/admin/*',
     element: Admin,
+    authRequired: true,
+  },
+  {
+    path: '/page/:page',
+    element: NewsFeedView,
+    authRequired: true,
+  },
+  {
+    path: '/show/:id',
+    element: NewsDetailView,
     authRequired: true,
   },
   {

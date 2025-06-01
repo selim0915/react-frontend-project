@@ -44,17 +44,17 @@ export default class Store implements NewsStore {
   }
 
   setFeeds(feeds: NewsFeed[]): void {
-    this.feeds = feeds.map((feed) => ({
+    const updatedFeeds = feeds.map((feed) => ({
       ...feed,
       read: false,
     }));
+    this.feeds = updatedFeeds;
   }
 
   makeRead(id: number): void {
-    const feed = this.feeds.find((feed: NewsFeed) => feed.id === id);
-
-    if (feed) {
-      feed.read = true;
-    }
+    const updatedFeeds = this.feeds.map(feed =>
+      feed.id === id ? { ...feed, read: true } : feed
+    );
+    this.feeds = updatedFeeds;
   }
 }

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import api from '../../apis/api';
+import api from '../../apis/api.instance';
 import { ProductType } from '../../types/types';
 
 const Board: React.FC = () => {
