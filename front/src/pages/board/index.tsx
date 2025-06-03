@@ -1,24 +1,27 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState } from 'react';
 import api from '../../apis/api.instance';
 import * as Actions from '../../store/actions';
+import { asyncJobs, asyncRouter, logger, resetCountMiddleware } from '../../store/middleware';
 import reducer from '../../store/reducer';
 import { createStore } from '../../store/redux';
 import { ProductType } from '../../types/core.type';
 
-const store = createStore(reducer);
+// store 미들웨어 추가
+const store = createStore(reducer, [resetCountMiddleware, logger, asyncRouter(asyncJobs)]);
 
 const Board: React.FC = () => {
-  const [counter, setCounter] = useState<number>(0);
+  const [count, setCount] = useState<number>(0);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [productList, setProductList] = useState<ProductType[]>([]);
 
   useEffect(() => {
     const handler = () => {
       const state = store.getState();
-      const val = state?.counter ?? 0;
-      setCounter(val);
+      setCount(state?.counter ?? 0);
+      setIsLoading(state?.request);
     };
     store.subscribe(handler);
-
   }, []);
 
   const handleIncrease = () => {
@@ -48,7 +51,9 @@ const Board: React.FC = () => {
       <h1>Board Page</h1>
 
       <div>
-        <p id="counter" className='text-2xl'>{counter}</p>
+        <p id="counter" className='text-2xl'>{count}</p>
+
+        {isLoading && <div>Loading...</div>}
 
         <button type='button' id="btn-increase" className='px-4 py-2 border border-gray-300 rounded hover:bg-gray-200 
                    focus:outline-none focus:ring-2 focus:ring-gray-300' onClick={handleIncrease}>
