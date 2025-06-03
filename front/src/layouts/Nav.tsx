@@ -9,7 +9,7 @@ interface NavProp {
 }
 
 const Nav: React.FC<NavProp> = ({ isLoggedIn }) => {
-  const userRole = localStorage.getItem('userRole') || '';
+  const userRole = localStorage.getItem('role') || '';
 
   const menuItems: RouteMenuItem[] = routeConfig.filter((route: RouteMenuItem) => {
     if (!route.showInMenu) return false;

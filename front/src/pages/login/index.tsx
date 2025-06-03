@@ -22,7 +22,7 @@ const Login: React.FC = () => {
     if (userId && password) {
       localStorage.setItem('token', 'abcdefg');
       localStorage.setItem('id', userId);
-      localStorage.setItem('role', 'user');
+      localStorage.setItem('role', 'admin');
       window.location.href = '/';
     } else {
       setMsg('아이디와 비밀번호를 확인하세요.');
