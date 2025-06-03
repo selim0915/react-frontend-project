@@ -24,7 +24,7 @@ export const routeConfig: RouteMenuItem[] = [
     authRequired: false,
   },
   {
-    path: '/board/*',
+    path: '/board',
     label: '자유게시판',
     element: Board,
     showInMenu: true,
